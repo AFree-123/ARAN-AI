@@ -211,6 +211,9 @@ ALERT / SUPPORT
 
 The purpose is to transform complex disaster information into understandable decision-support context while preserving source meaning.
 
+
+
+
 🌐 Google Technology Integration
 
 ARAN AI uses Google technologies as important parts of its architecture.
@@ -225,6 +228,8 @@ Natural-language interaction
 Multilingual assistance
 Disaster preparedness guidance
 Google Earth Engine
+
+
 
 Used for:
 
@@ -242,9 +247,15 @@ Application data infrastructure
 Firestore integration
 Google Cloud
 
+
+
 The architecture is designed to support scalable cloud deployment and future integration with additional Google Cloud services.
 
+
+
 🏗️ System Architecture
+
+
 Official / Disaster Information
             │
             ▼
@@ -272,7 +283,11 @@ Infrastructure   Shelters
        │
        ▼
  AI Assistant / Reports
+
+
 🖥️ Platform Modules
+
+
 
 ARAN AI contains the following major modules:
 
@@ -288,7 +303,10 @@ Parametric Risk Simulation
 Reports
 Settings
 Firebase Authentication
+
+
 📸 Product Preview
+
 Login
 
 Dashboard
@@ -305,7 +323,10 @@ Parametric Risk Simulation
 
 Screenshots represent the current prototype interface.
 
+
 🛠️ Technology Stack
+
+
 Frontend
 HTML5
 CSS3
@@ -331,7 +352,10 @@ External Data Services
 Meteorological APIs
 Official disaster-information sources
 Map/tile services
+
+
 📁 Project Structure
+
 ARAN-AI-final-fixed/
 │
 ├── app.py
@@ -368,81 +392,7 @@ ARAN-AI-final-fixed/
 ├── .gitignore
 ├── README.md
 └── requirements.txt
-⚙️ Installation
-1. Clone the repository
-git clone YOUR_GITHUB_REPOSITORY_URL
-cd ARAN-AI-final-fixed
-2. Create a virtual environment
-python -m venv venv
-Windows
-venv\Scripts\activate
-3. Install dependencies
-pip install -r requirements.txt
-🔐 Environment Variables
 
-Create a .env file in the project root.
-
-GEMINI_API_KEY=YOUR_GEMINI_API_KEY
-GEMINI_MODEL=gemini-3.8-flash
-
-FRONTEND_URL=http://127.0.0.1:5000
-
-Do not commit .env or private service-account credentials to GitHub.
-
-🌍 Google Earth Engine Setup
-
-ARAN AI uses Google Earth Engine for geospatial analysis.
-
-Authenticate Earth Engine:
-
-earthengine authenticate
-
-Then initialize the project:
-
-import ee
-
-ee.Initialize(project="YOUR_EARTH_ENGINE_PROJECT_ID")
-
-The application can then access configured Earth Engine datasets through the backend service.
-
-🔥 Firebase Setup
-
-Firebase is used for authentication and application data.
-
-Configure:
-
-Email/Password Authentication
-Google Authentication
-Firestore
-
-Firebase configuration should be stored securely.
-
-Do not expose Firebase Admin service-account credentials in the public repository.
-
-▶️ Run Locally
-
-Start the Flask application:
-
-python app.py
-
-Open:
-
-http://127.0.0.1:5000
-
-Dashboard:
-
-http://127.0.0.1:5000/dashboard
-🔌 API Modules
-
-Important backend endpoints include:
-
-/api/alerts
-/api/cyclone
-/api/risk-map/rainfall
-/api/insurance
-/api/ask
-
-These APIs connect the frontend interface with disaster intelligence, geospatial analysis, weather information and Gemini-powered assistance.
 
 🌧️ Parametric Risk Simulation
 
@@ -464,9 +414,11 @@ This is a simulation for prototype decision support.
 
 It is not an insurance contract and does not represent an actual insurance payout.
 
+
 🔎 Data Provenance & Safety
 
 ARAN AI follows a source-aware approach.
+
 
 The system is designed to:
 
@@ -500,6 +452,7 @@ Other coastal regions
 With appropriate datasets and authority integrations, the architecture can be extended to broader Asia-Pacific coastal regions.
 
 🚀 Future Improvements
+
 1. Advanced Hazard Modelling
 
 Future versions can integrate:
@@ -607,6 +560,7 @@ Artificial Intelligence
 Geospatial Risk Analysis
        =
 Better Disaster Preparedness
+
 👩‍💻 Author
 
 Ms. Afreena Abdul Jabbar
@@ -616,6 +570,7 @@ B.Tech Information Technology
 Sir Isaac Newton College of Engineering and Technology
 
 Tamil Nadu, India
+
 
 📌 Disclaimer
 
