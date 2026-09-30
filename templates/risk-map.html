@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>ARAN AI — Risk Map</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <!-- Leaflet -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <style>
+        /* =========================
+           RISK MAP
+        ========================= */
+
+        .full-map {
+            position: relative;
+            height: calc(100vh - 150px);
+            min-height: 620px;
+            border-radius: 22px;
+            overflow: hidden;
+            background: #08111f;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        #riskMap {
+            width: 100%;
+            height: 100%;
+            min-height: 620px;
+            z-index: 1;
+        }
+
+        /* =========================
+           TOOLBAR
+        ========================= */
+
+        .map-toolbar {
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            z-index: 1000;
+
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+
+            padding: 10px;
+
+            background: rgba(8, 17, 31, 0.88);
+            backdrop-filter: blur(14px);
+
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 14px;
+
+            box-shadow: 0 12px 35px rgba(0,0,0,0.35);
+        }
+
+        .map-toolbar button {
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.06);
+            color: #dcecff;
+
+            padding: 9px 13px;
+            border-radius: 9px;
+
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+
+            transition: 0.2s ease;
+        }
+
+        .map-toolbar button:hover {
+            background: rgba(0, 210, 255, 0.14);
+            border-color: rgba(0, 210, 255, 0.45);
+        }
+
+        .map-toolbar button.active {
+            background: rgba(0, 210, 255, 0.20);
+            border-color: #00d9ff;
+            color: #ffffff;
+        }
+
+        /* =========================
+           MAP PANEL
+        ========================= */
+
+        .map-panel {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+
+            width: 235px;
+
+            z-index: 1000;
+
+            padding: 17px;
+
+            background: rgba(8, 17, 31, 0.91);
+            backdrop-filter: blur(16px);
+
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+
+            color: #dcecff;
+        }
+
+        .map-panel h4 {
+            margin: 0 0 13px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .layer-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            padding: 8px 4px;
+
+            font-size: 12px;
+            color: #b8c8dc;
+        }
+
+        .layer-row input {
+            accent-color: #00d9ff;
+            cursor: pointer;
+        }
+
+        .layer-row.disabled {
+            opacity: 0.45;
+        }
+
+        .layer-status {
+            margin-top: 12px;
+            padding-top: 11px;
+
+            border-top: 1px solid rgba(255,255,255,0.08);
+
+            font-size: 10px;
+            line-height: 1.5;
+            color: #8fa6bf;
+        }
+
+        .status-dot {
+            display: inline-block;
+
+            width: 7px;
+            height: 7px;
+
+            margin-right: 5px;
+
+            border-radius: 50%;
+            background: #2ee88a;
+
+            box-shadow: 0 0 9px rgba(46,232,138,0.7);
+        }
+
+        /* =========================
+           MAP INFO
+        ========================= */
+
+        .map-info {
+            position: absolute;
+            bottom: 18px;
+            left: 18px;
+
+            z-index: 1000;
+
+            max-width: 330px;
+
+            padding: 13px 16px;
+
+            background: rgba(8,17,31,0.90);
+            backdrop-filter: blur(14px);
+
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 13px;
+
+            color: #bcd0e6;
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        .map-info strong {
+            color: #ffffff;
+        }
+
+        /* =========================
+           LEGEND
+        ========================= */
+
+        .map-legend-box {
+            position: absolute;
+            right: 18px;
+            bottom: 18px;
+
+            z-index: 1000;
+
+            padding: 12px 15px;
+
+            background: rgba(8,17,31,0.90);
+            backdrop-filter: blur(14px);
+
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 13px;
+
+            color: #c7d8e9;
+
+            font-size: 11px;
+            line-height: 1.9;
+        }
+
+        .legend-title {
+            color: #ffffff;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .legend-rain {
+            display: inline-block;
+            width: 22px;
+            height: 7px;
+            border-radius: 4px;
+            margin-right: 6px;
+            background: linear-gradient(
+                90deg,
+                #000096,
+                #0064ff,
+                #00b4ff,
+                #33db80,
+                #ffeb00,
+                #ff6400,
+                #af0000
+            );
+        }
+
+        /* =========================
+           LOADING
+        ========================= */
+
+        .map-loading {
+            position: absolute;
+            inset: 0;
+
+            z-index: 2000;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: rgba(4,10,19,0.78);
+            backdrop-filter: blur(5px);
+
+            color: #dff7ff;
+            font-size: 13px;
+
+            pointer-events: none;
+
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .map-loading.hidden {
+            opacity: 0;
+        }
+
+        .loading-box {
+            padding: 18px 24px;
+
+            background: rgba(10,25,43,0.95);
+
+            border: 1px solid rgba(0,217,255,0.25);
+
+            border-radius: 13px;
+
+            box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+        }
+
+        /* =========================
+           LEAFLET DARK POPUP
+        ========================= */
+
+        .leaflet-popup-content-wrapper,
+        .leaflet-popup-tip {
+            background: #0b1727;
+            color: #dcecff;
+        }
+
+        .leaflet-popup-content {
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        .leaflet-control-layers {
+            background: rgba(8,17,31,0.92) !important;
+            color: #dcecff !important;
+            border: 1px solid rgba(255,255,255,0.12) !important;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            .full-map {
+                height: calc(100vh - 170px);
+            }
+
+            #riskMap {
+                min-height: 580px;
+            }
+
+            .map-panel {
+                width: 190px;
+                top: auto;
+                bottom: 80px;
+            }
+
+            .map-toolbar {
+                right: 15px;
+                left: 15px;
+            }
+
+            .map-toolbar button {
+                font-size: 10px;
+                padding: 7px 9px;
+            }
+
+            .map-legend-box {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+
+<aside class="sidebar">
+
+    <div class="side-logo">
+        <a href="/dashboard">
+            <img src="/static/images/aran-logo.svg">
+        </a>
+    </div>
+
+    <nav class="nav">
+
+        <a href="/dashboard">
+            ⌂ Dashboard
+        </a>
+
+        <a href="/live-alerts">
+            🔔 Live Alerts
+        </a>
+
+        <a href="/risk-map">
+            ▧ Risk Map
+        </a>
+
+        <a href="/infrastructure">
+            ▦ Infrastructure
+        </a>
+
+        <a href="/shelters">
+            ♧ Evacuation & Shelters
+        </a>
+
+        <a href="/weather">
+            ☁ Weather & Forecast
+        </a>
+
+        <a href="/news">
+            ▤ News Intelligence
+        </a>
+
+        <a href="/assistant">
+            🤖 AI Assistant
+        </a>
+
+        <a href="/insurance">
+            ◇ Insurance (Demo)
+        </a>
+
+        <a href="/reports">
+            ▣ Reports
+        </a>
+
+        <a href="/settings">
+            ⚙ Settings
+        </a>
+
+    </nav>
+
+    <div class="side-bottom">
+
+        <div class="online">
+            <i></i>
+            Systems operational
+        </div>
+
+        ARAN AI v1.0 • Hackathon Prototype
+
+    </div>
+
+</aside>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="page-shell">
+
+    <header class="page-top">
+
+        <div class="page-title">
+
+            <div class="tag">
+                GEOSPATIAL RISK INTELLIGENCE
+            </div>
+
+            <h1>
+                Risk Map
+            </h1>
+
+            <p>
+                Dedicated geospatial workspace for cyclone track,
+                rainfall, surge and exposure layers.
+            </p>
+
+        </div>
+
+
+        <div class="page-actions">
+
+            <button class="module-btn">
+                EN / தமிழ்
+            </button>
+
+            <a href="/dashboard">
+                <button class="module-btn">
+                    ← Dashboard
+                </button>
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         MAP
+    ========================= -->
+
+    <section class="full-map">
+
+        <!-- MAP LOADING -->
+
+        <div id="mapLoading" class="map-loading">
+
+            <div class="loading-box">
+                Loading ARAN AI geospatial intelligence...
+            </div>
+
+        </div>
+
+
+        <!-- ACTUAL MAP -->
+
+        <div id="riskMap"></div>
+
+
+        <!-- =========================
+             TOOLBAR
+        ========================= -->
+
+        <div class="map-toolbar">
+
+            <button
+                id="satelliteBtn"
+                class="active"
+                type="button"
+            >
+                ◉ Satellite
+            </button>
+
+            <button
+                id="rainfallBtn"
+                type="button"
+            >
+                ☁ Rainfall
+            </button>
+
+            <button
+                id="windBtn"
+                type="button"
+            >
+                ≋ Wind
+            </button>
+
+            <button
+                id="surgeBtn"
+                type="button"
+            >
+                ≈ Storm Surge
+            </button>
+
+            <button
+                id="infraBtn"
+                type="button"
+            >
+                ▦ Infrastructure
+            </button>
+
+        </div>
+
+
+        <!-- =========================
+             MAP LAYERS
+        ========================= -->
+
+        <div class="map-panel">
+
+            <h4>
+                Map Layers
+            </h4>
+
+
+            <label class="layer-row">
+
+                <input
+                    id="cycloneLayer"
+                    type="checkbox"
+                >
+
+                <span>
+                    Cyclone Track
+                </span>
+
+            </label>
+
+
+            <label class="layer-row">
+
+                <input
+                    id="rainfallLayer"
+                    type="checkbox"
+                    checked
+                >
+
+                <span>
+                    Rainfall (GEE)
+                </span>
+
+            </label>
+
+
+            <label class="layer-row disabled">
+
+                <input
+                    id="stormSurgeLayer"
+                    type="checkbox"
+                    disabled
+                >
+
+                <span>
+                    Storm Surge
+                </span>
+
+            </label>
+
+
+            <label class="layer-row disabled">
+
+                <input
+                    id="elevationLayer"
+                    type="checkbox"
+                    disabled
+                >
+
+                <span>
+                    Elevation
+                </span>
+
+            </label>
+
+
+            <label class="layer-row">
+
+                <input
+                    id="infrastructureLayer"
+                    type="checkbox"
+                >
+
+                <span>
+                    Infrastructure
+                </span>
+
+            </label>
+
+
+            <label class="layer-row">
+
+                <input
+                    id="shelterLayer"
+                    type="checkbox"
+                >
+
+                <span>
+                    Evacuation Shelters
+                </span>
+
+            </label>
+
+
+            <div class="layer-status">
+
+                <span class="status-dot"></span>
+
+                GEE rainfall connection active
+
+                <br>
+
+                NASA GPM IMERG V07
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             MAP INFORMATION
+        ========================= -->
+
+        <div class="map-info">
+
+            <strong>ARAN AI Geospatial Intelligence</strong>
+
+            <br>
+
+            Rainfall overlay is retrieved from
+            Google Earth Engine using
+            NASA GPM IMERG V07.
+
+            <br><br>
+
+            <span id="mapStatus">
+                Initializing map...
+            </span>
+
+        </div>
+
+
+        <!-- =========================
+             LEGEND
+        ========================= -->
+
+        <div class="map-legend-box">
+
+            <div class="legend-title">
+                Rainfall Intensity
+            </div>
+
+            <div>
+                <span class="legend-rain"></span>
+                Low → High
+            </div>
+
+            <div>
+                🔴 High Risk
+            </div>
+
+            <div>
+                🟠 Medium Risk
+            </div>
+
+            <div>
+                🟢 Lower Risk
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- Leaflet JS -->
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+<!-- ARAN Risk Map JS -->
+
+<script src="/static/js/risk-map.js"></script>
+
+
+</body>
+</html>

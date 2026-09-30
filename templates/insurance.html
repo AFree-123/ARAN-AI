@@ -1,0 +1,1374 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>ARAN AI — Insurance Trigger</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/css/style.css"
+    >
+
+    <style>
+
+        /* =====================================================
+           INSURANCE PAGE
+        ===================================================== */
+
+        .insurance-meta {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+
+        .insurance-meta-card {
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 16px;
+        }
+
+
+        .insurance-meta-card small {
+            display: block;
+            opacity: 0.55;
+            font-size: 11px;
+            margin-bottom: 7px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+
+        .insurance-meta-card strong {
+            font-size: 15px;
+        }
+
+
+        .insurance-status {
+            color: var(--orange);
+        }
+
+
+        .insurance-status.good {
+            color: #55d68a;
+        }
+
+
+        .insurance-status.high {
+            color: #ff6b6b;
+        }
+
+
+        .insurance-status.nodata {
+            color: #f5c451;
+        }
+
+
+        .insurance-loading {
+            opacity: 0.6;
+        }
+
+
+        .source-link {
+            color: #58c7ff;
+            text-decoration: none;
+        }
+
+
+        .source-link:hover {
+            text-decoration: underline;
+        }
+
+
+        .updated-text {
+            opacity: 0.55;
+            font-size: 12px;
+            margin-top: 12px;
+        }
+
+
+        .refresh-btn {
+            cursor: pointer;
+        }
+
+
+        .refresh-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+
+        .riskbar {
+            overflow: hidden;
+            height: 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            margin: 20px 0 14px;
+        }
+
+
+        .riskbar i {
+            display: block;
+            height: 100%;
+            width: 0%;
+            border-radius: inherit;
+            transition: width 0.5s ease;
+
+            background: linear-gradient(
+                90deg,
+                #55d68a,
+                #f5c451,
+                #ff6b6b
+            );
+        }
+
+
+        .threshold-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            opacity: 0.6;
+        }
+
+
+        .small {
+            line-height: 1.6;
+        }
+
+
+        .error-text {
+            color: #ff6b6b;
+        }
+
+
+        @media (max-width: 700px) {
+
+            .insurance-meta {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside class="sidebar">
+
+    <div class="side-logo">
+
+        <a href="/dashboard">
+
+            <img
+                src="/static/images/aran-logo.svg"
+                alt="ARAN AI"
+            >
+
+        </a>
+
+    </div>
+
+
+    <nav class="nav">
+
+        <a href="/dashboard">
+            ⌂ Dashboard
+        </a>
+
+        <a href="/live-alerts">
+            🔔 Live Alerts
+        </a>
+
+        <a href="/risk-map">
+            ▧ Risk Map
+        </a>
+
+        <a href="/infrastructure">
+            ▦ Infrastructure
+        </a>
+
+        <a href="/shelters">
+            ♧ Evacuation & Shelters
+        </a>
+
+        <a href="/weather">
+            ☁ Weather & Forecast
+        </a>
+
+        <a href="/news">
+            ▤ News Intelligence
+        </a>
+
+        <a href="/assistant">
+            🤖 AI Assistant
+        </a>
+
+        <a href="/insurance">
+            ◇ Insurance
+        </a>
+
+        <a href="/reports">
+            ▣ Reports
+        </a>
+
+        <a href="/settings">
+            ⚙ Settings
+        </a>
+
+    </nav>
+
+
+    <div class="side-bottom">
+
+        <div class="online">
+            <i></i>
+            Systems operational
+        </div>
+
+        ARAN AI v1.0 • Hackathon Prototype
+
+    </div>
+
+</aside>
+
+
+<!-- =========================================================
+     MAIN PAGE
+========================================================= -->
+
+<main class="page-shell">
+
+
+    <!-- =====================================================
+         HEADER
+    ===================================================== -->
+
+    <header class="page-top">
+
+        <div class="page-title">
+
+            <div class="tag">
+                PARAMETRIC RISK SIMULATION
+            </div>
+
+
+            <h1>
+                Insurance Trigger
+            </h1>
+
+
+            <p>
+                A measurable-risk simulation showing how
+                predefined rainfall thresholds could trigger
+                a financial-support event.
+            </p>
+
+        </div>
+
+
+        <div class="page-actions">
+
+            <button
+                class="module-btn refresh-btn"
+                id="refreshBtn"
+                type="button"
+                onclick="loadInsuranceData()"
+            >
+                ↻ Refresh
+            </button>
+
+
+            <a href="/dashboard">
+
+                <button
+                    class="module-btn"
+                    type="button"
+                >
+                    ← Dashboard
+                </button>
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         STAT CARDS
+    ===================================================== -->
+
+    <div class="module-grid">
+
+
+        <!-- TRIGGER -->
+
+        <div class="module-stat">
+
+            <small>
+                TRIGGER
+            </small>
+
+            <strong id="triggerValue">
+                Rainfall
+            </strong>
+
+            <span>
+                Parameter type
+            </span>
+
+        </div>
+
+
+
+        <!-- THRESHOLD -->
+
+        <div class="module-stat">
+
+            <small>
+                THRESHOLD
+            </small>
+
+            <strong
+                id="thresholdValue"
+                class="insurance-loading"
+            >
+                Loading...
+            </strong>
+
+            <span>
+                Defined simulation threshold
+            </span>
+
+        </div>
+
+
+
+        <!-- CURRENT -->
+
+        <div class="module-stat">
+
+            <small>
+                CURRENT
+            </small>
+
+            <strong
+                id="currentValue"
+                class="insurance-loading"
+            >
+                Loading...
+            </strong>
+
+            <span id="currentDescription">
+                Live measurement
+            </span>
+
+        </div>
+
+
+
+        <!-- STATUS -->
+
+        <div class="module-stat">
+
+            <small>
+                STATUS
+            </small>
+
+            <strong
+                id="statusValue"
+                class="insurance-status insurance-loading"
+            >
+                Loading...
+            </strong>
+
+            <span id="statusDescription">
+                Checking live data
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         LIVE RISK OBSERVATION
+    ===================================================== -->
+
+    <section class="module-content">
+
+        <h2>
+            Live Risk Observation
+        </h2>
+
+
+        <div class="insurance-meta">
+
+
+            <!-- LOCATION -->
+
+            <div class="insurance-meta-card">
+
+                <small>
+                    Location
+                </small>
+
+                <strong id="locationValue">
+                    Loading...
+                </strong>
+
+            </div>
+
+
+
+            <!-- MEASUREMENT -->
+
+            <div class="insurance-meta-card">
+
+                <small>
+                    Measurement
+                </small>
+
+                <strong
+                    id="measurementValue"
+                    class="insurance-loading"
+                >
+                    Loading...
+                </strong>
+
+            </div>
+
+
+
+            <!-- SOURCE -->
+
+            <div class="insurance-meta-card">
+
+                <small>
+                    Data Source
+                </small>
+
+                <strong id="sourceValue">
+                    Loading...
+                </strong>
+
+            </div>
+
+
+
+            <!-- STATUS -->
+
+            <div class="insurance-meta-card">
+
+                <small>
+                    Data Status
+                </small>
+
+                <strong id="dataStatusValue">
+                    Connecting...
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="updated-text"
+            id="updatedValue"
+        >
+            Last updated: —
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         TRIGGER SIMULATION
+    ===================================================== -->
+
+    <section class="module-content">
+
+        <h2>
+            Trigger Simulation
+        </h2>
+
+
+        <p id="triggerExplanation">
+
+            Checking the current rainfall observation
+            against the configured simulation threshold.
+
+        </p>
+
+
+        <!-- RISK BAR -->
+
+        <div class="riskbar">
+
+            <i id="riskProgress"></i>
+
+        </div>
+
+
+        <div class="threshold-labels">
+
+            <span>
+                0 mm
+            </span>
+
+
+            <span id="thresholdLabel">
+                Threshold: —
+            </span>
+
+        </div>
+
+
+        <p
+            class="small"
+            style="margin-top:20px;"
+        >
+
+            This is a parametric risk decision-support
+            simulation, not an insurance contract or payout.
+            Real parametric insurance requires validated
+            parameters, authoritative measurements,
+            contractual terms and insurer integration.
+
+        </p>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         DATA SOURCE
+    ===================================================== -->
+
+    <section class="module-content">
+
+        <h2>
+            Source Verification
+        </h2>
+
+
+        <p class="small">
+
+            The displayed precipitation value is retrieved
+            from the connected meteorological data service.
+            ARAN AI does not invent rainfall measurements
+            or payout decisions.
+
+        </p>
+
+
+        <p class="small">
+
+            Source:
+
+            <a
+                id="sourceLink"
+                class="source-link"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                —
+            </a>
+
+        </p>
+
+
+        <p
+            class="small"
+            id="dataNote"
+        >
+        </p>
+
+    </section>
+
+
+</main>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script>
+
+
+/* =========================================================
+   LOAD INSURANCE DATA
+========================================================= */
+
+async function loadInsuranceData() {
+
+
+    const refreshBtn =
+        document.getElementById(
+            "refreshBtn"
+        );
+
+
+    const triggerValue =
+        document.getElementById(
+            "triggerValue"
+        );
+
+
+    const thresholdValue =
+        document.getElementById(
+            "thresholdValue"
+        );
+
+
+    const currentValue =
+        document.getElementById(
+            "currentValue"
+        );
+
+
+    const currentDescription =
+        document.getElementById(
+            "currentDescription"
+        );
+
+
+    const statusValue =
+        document.getElementById(
+            "statusValue"
+        );
+
+
+    const statusDescription =
+        document.getElementById(
+            "statusDescription"
+        );
+
+
+    const locationValue =
+        document.getElementById(
+            "locationValue"
+        );
+
+
+    const measurementValue =
+        document.getElementById(
+            "measurementValue"
+        );
+
+
+    const sourceValue =
+        document.getElementById(
+            "sourceValue"
+        );
+
+
+    const dataStatusValue =
+        document.getElementById(
+            "dataStatusValue"
+        );
+
+
+    const updatedValue =
+        document.getElementById(
+            "updatedValue"
+        );
+
+
+    const triggerExplanation =
+        document.getElementById(
+            "triggerExplanation"
+        );
+
+
+    const riskProgress =
+        document.getElementById(
+            "riskProgress"
+        );
+
+
+    const thresholdLabel =
+        document.getElementById(
+            "thresholdLabel"
+        );
+
+
+    const sourceLink =
+        document.getElementById(
+            "sourceLink"
+        );
+
+
+    const dataNote =
+        document.getElementById(
+            "dataNote"
+        );
+
+
+
+    /* =====================================================
+       LOADING STATE
+    ===================================================== */
+
+    refreshBtn.disabled = true;
+
+
+    currentValue.textContent =
+        "Loading...";
+
+
+    currentValue.classList.add(
+        "insurance-loading"
+    );
+
+
+    thresholdValue.textContent =
+        "Loading...";
+
+
+    thresholdValue.classList.add(
+        "insurance-loading"
+    );
+
+
+    statusValue.textContent =
+        "Checking...";
+
+
+    statusValue.className =
+        "insurance-status insurance-loading";
+
+
+    measurementValue.textContent =
+        "Loading...";
+
+
+    measurementValue.classList.add(
+        "insurance-loading"
+    );
+
+
+
+    try {
+
+
+        /* =================================================
+           API REQUEST
+        ================================================= */
+
+        const response =
+            await fetch(
+                "/api/insurance?fresh=" +
+                Date.now(),
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Insurance API returned HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "ARAN AI Insurance Data:",
+            data
+        );
+
+
+
+        /* =================================================
+           TRIGGER
+        ================================================= */
+
+        triggerValue.textContent =
+            "Rainfall";
+
+
+
+        /* =================================================
+           LOCATION
+        ================================================= */
+
+        locationValue.textContent =
+            data.location_name ||
+            "Location unavailable";
+
+
+
+        /* =================================================
+           THRESHOLD
+        ================================================= */
+
+        const threshold =
+            Number(
+                data.threshold_mm
+            );
+
+
+        if (
+            Number.isFinite(
+                threshold
+            )
+        ) {
+
+            thresholdValue.textContent =
+                threshold.toFixed(0) +
+                " mm";
+
+
+            thresholdValue.classList.remove(
+                "insurance-loading"
+            );
+
+
+            thresholdLabel.textContent =
+                "Threshold: " +
+                threshold.toFixed(0) +
+                " mm";
+
+        }
+
+        else {
+
+            thresholdValue.textContent =
+                "Not available";
+
+            thresholdLabel.textContent =
+                "Threshold unavailable";
+
+        }
+
+
+
+        /* =================================================
+           CURRENT RAINFALL
+        ================================================= */
+
+        const rainfall =
+            data.rainfall_mm;
+
+
+        if (
+            rainfall !== null &&
+            rainfall !== undefined &&
+            Number.isFinite(
+                Number(rainfall)
+            )
+        ) {
+
+
+            const rainfallNumber =
+                Number(
+                    rainfall
+                );
+
+
+            /* CURRENT CARD */
+
+            currentValue.textContent =
+                rainfallNumber.toFixed(1) +
+                " mm";
+
+
+            currentValue.classList.remove(
+                "insurance-loading"
+            );
+
+
+            /* DESCRIPTION */
+
+            currentDescription.textContent =
+                data.measurement_type ||
+                "24-hour precipitation";
+
+
+            /* MEASUREMENT CARD */
+
+            measurementValue.textContent =
+                data.measurement_type ||
+                "24-hour precipitation";
+
+
+            measurementValue.classList.remove(
+                "insurance-loading"
+            );
+
+
+            /* PROGRESS */
+
+            if (
+                Number.isFinite(
+                    threshold
+                ) &&
+                threshold > 0
+            ) {
+
+
+                const percentage =
+                    Math.min(
+                        100,
+                        Math.max(
+                            0,
+                            (
+                                rainfallNumber /
+                                threshold
+                            ) * 100
+                        )
+                    );
+
+
+                riskProgress.style.width =
+                    percentage +
+                    "%";
+
+            }
+
+        }
+
+        else {
+
+
+            currentValue.textContent =
+                "NO DATA";
+
+
+            currentValue.classList.remove(
+                "insurance-loading"
+            );
+
+
+            currentDescription.textContent =
+                "No verified measurement available";
+
+
+            measurementValue.textContent =
+                "Measurement unavailable";
+
+
+            measurementValue.classList.remove(
+                "insurance-loading"
+            );
+
+
+            riskProgress.style.width =
+                "0%";
+
+        }
+
+
+
+        /* =================================================
+           STATUS
+        ================================================= */
+
+        const status =
+            data.status ||
+            "UNKNOWN";
+
+
+        statusValue.textContent =
+            status;
+
+
+        statusValue.className =
+            "insurance-status";
+
+
+
+        if (
+            status ===
+            "TRIGGER CONDITION"
+        ) {
+
+
+            statusValue.classList.add(
+                "high"
+            );
+
+
+            statusDescription.textContent =
+                "Threshold condition detected";
+
+
+            triggerExplanation.textContent =
+                "The measured rainfall has reached " +
+                "or exceeded the configured " +
+                "simulation threshold.";
+
+        }
+
+
+        else if (
+            status ===
+            "WATCH"
+        ) {
+
+
+            statusValue.classList.add(
+                "insurance-status"
+            );
+
+
+            statusDescription.textContent =
+                "Approaching threshold";
+
+
+            triggerExplanation.textContent =
+                "Rainfall is approaching the configured " +
+                "simulation threshold. No trigger condition " +
+                "has been reached.";
+
+        }
+
+
+        else if (
+            status ===
+            "BELOW THRESHOLD"
+        ) {
+
+
+            statusValue.classList.add(
+                "good"
+            );
+
+
+            statusDescription.textContent =
+                "Below trigger threshold";
+
+
+            triggerExplanation.textContent =
+                "The current measured precipitation is " +
+                "below the configured simulation threshold.";
+
+        }
+
+
+        else if (
+            status ===
+            "NO DATA"
+        ) {
+
+
+            statusValue.classList.add(
+                "nodata"
+            );
+
+
+            statusDescription.textContent =
+                "Measurement unavailable";
+
+
+            triggerExplanation.textContent =
+                "A verified precipitation measurement is " +
+                "currently unavailable. ARAN AI does not " +
+                "substitute invented values.";
+
+        }
+
+
+        else {
+
+
+            statusDescription.textContent =
+                "Status unavailable";
+
+
+            triggerExplanation.textContent =
+                "The trigger status could not be determined.";
+
+        }
+
+
+
+        /* =================================================
+           DATA SOURCE
+        ================================================= */
+
+        sourceValue.textContent =
+            data.source ||
+            "Source unavailable";
+
+
+
+        /* =================================================
+           DATA STATUS
+        ================================================= */
+
+        if (
+            data.status ===
+            "ERROR"
+        ) {
+
+            dataStatusValue.textContent =
+                "ERROR";
+
+        }
+
+        else if (
+            data.rainfall_mm === null ||
+            data.rainfall_mm === undefined
+        ) {
+
+            dataStatusValue.textContent =
+                "NO VERIFIED MEASUREMENT";
+
+        }
+
+        else {
+
+            dataStatusValue.textContent =
+                "CONNECTED";
+
+        }
+
+
+
+        /* =================================================
+           UPDATED TIME
+        ================================================= */
+
+        if (
+            data.updated_at
+        ) {
+
+
+            const date =
+                new Date(
+                    data.updated_at
+                );
+
+
+            if (
+                !isNaN(
+                    date.getTime()
+                )
+            ) {
+
+
+                updatedValue.textContent =
+                    "Last updated: " +
+                    date.toLocaleString(
+                        "en-IN",
+                        {
+                            dateStyle:
+                                "medium",
+
+                            timeStyle:
+                                "short"
+                        }
+                    );
+
+            }
+
+            else {
+
+                updatedValue.textContent =
+                    "Last updated: " +
+                    data.updated_at;
+
+            }
+
+        }
+
+        else {
+
+            updatedValue.textContent =
+                "Last updated: unavailable";
+
+        }
+
+
+
+        /* =================================================
+           SOURCE URL
+        ================================================= */
+
+        if (
+            data.source_url
+        ) {
+
+
+            sourceLink.href =
+                data.source_url;
+
+
+            sourceLink.textContent =
+                data.source ||
+                "Open source";
+
+        }
+
+        else {
+
+
+            sourceLink.removeAttribute(
+                "href"
+            );
+
+
+            sourceLink.textContent =
+                "Source URL unavailable";
+
+        }
+
+
+
+        /* =================================================
+           DATA NOTE
+        ================================================= */
+
+        if (
+            data.data_note
+        ) {
+
+            dataNote.textContent =
+                data.data_note;
+
+        }
+
+        else {
+
+            dataNote.textContent =
+                "";
+
+        }
+
+
+
+    }
+
+
+    catch (error) {
+
+
+        console.error(
+            "ARAN AI Insurance Error:",
+            error
+        );
+
+
+        currentValue.textContent =
+            "ERROR";
+
+
+        currentValue.classList.remove(
+            "insurance-loading"
+        );
+
+
+        thresholdValue.classList.remove(
+            "insurance-loading"
+        );
+
+
+        statusValue.textContent =
+            "UNAVAILABLE";
+
+
+        statusValue.className =
+            "insurance-status high";
+
+
+        statusDescription.textContent =
+            "Live data connection failed";
+
+
+        measurementValue.textContent =
+            "Measurement unavailable";
+
+
+        measurementValue.classList.remove(
+            "insurance-loading"
+        );
+
+
+        dataStatusValue.textContent =
+            "CONNECTION ERROR";
+
+
+        triggerExplanation.textContent =
+            "The live precipitation service could " +
+            "not be reached. No simulated or invented " +
+            "measurement is displayed.";
+
+
+        riskProgress.style.width =
+            "0%";
+
+
+        updatedValue.textContent =
+            "Last updated: —";
+
+
+        sourceValue.textContent =
+            "Open-Meteo";
+
+
+        dataNote.textContent =
+            error.message || "";
+
+    }
+
+
+    finally {
+
+
+        refreshBtn.disabled =
+            false;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   LOAD WHEN PAGE OPENS
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        loadInsuranceData();
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>

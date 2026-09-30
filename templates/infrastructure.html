@@ -1,0 +1,948 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>ARAN AI — Infrastructure</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <style>
+        .live-context {
+            margin-top: 14px;
+            padding: 14px 18px;
+            border: 1px solid rgba(0, 200, 255, 0.25);
+            border-radius: 12px;
+            background: rgba(8, 35, 55, 0.72);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .live-context-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #28e98c;
+            box-shadow: 0 0 12px rgba(40, 233, 140, 0.8);
+        }
+
+        .live-context strong {
+            display: block;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .live-context small {
+            color: #8db4cc;
+            font-size: 12px;
+        }
+
+        .source-badge {
+            padding: 6px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(40, 233, 140, 0.35);
+            color: #42e69a;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .prototype-note {
+            margin-top: 10px;
+            padding: 9px 12px;
+            border-left: 3px solid #28b8ff;
+            background: rgba(0, 150, 255, 0.07);
+            color: #91b8cd;
+            font-size: 11px;
+            line-height: 1.5;
+            border-radius: 4px;
+        }
+
+        .asset-card strong {
+            display: block;
+            margin-top: 7px;
+            font-size: 34px;
+        }
+
+        .asset-card .context-risk {
+            margin-top: 5px;
+            font-size: 11px;
+            color: #8db4cc;
+        }
+
+        .risk-high {
+            color: var(--red) !important;
+        }
+
+        .risk-medium {
+            color: var(--orange) !important;
+        }
+
+        .risk-low {
+            color: var(--green) !important;
+        }
+
+        .risk-unknown {
+            color: #8db4cc !important;
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 4px 9px;
+            border-radius: 14px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .5px;
+        }
+
+        .status-pill.high {
+            color: #ff5b6b;
+            background: rgba(255, 70, 90, .10);
+            border: 1px solid rgba(255, 70, 90, .25);
+        }
+
+        .status-pill.medium {
+            color: #ffb23f;
+            background: rgba(255, 178, 63, .10);
+            border: 1px solid rgba(255, 178, 63, .25);
+        }
+
+        .status-pill.low {
+            color: #35e98c;
+            background: rgba(53, 233, 140, .10);
+            border: 1px solid rgba(53, 233, 140, .25);
+        }
+
+        .status-pill.unknown {
+            color: #91b8cd;
+            background: rgba(145, 184, 205, .08);
+            border: 1px solid rgba(145, 184, 205, .18);
+        }
+
+        .data-time {
+            margin-top: 12px;
+            color: #6e98ae;
+            font-size: 10px;
+        }
+
+        @media (max-width: 900px) {
+            .live-context {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+
+    <div class="side-logo">
+        <a href="/dashboard">
+            <img src="/static/images/aran-logo.svg">
+        </a>
+    </div>
+
+    <nav class="nav">
+        <a href="/dashboard">⌂ Dashboard</a>
+        <a href="/live-alerts">🔔 Live Alerts</a>
+        <a href="/risk-map">▧ Risk Map</a>
+        <a href="/infrastructure">▦ Infrastructure</a>
+        <a href="/shelters">♧ Evacuation & Shelters</a>
+        <a href="/weather">☁ Weather & Forecast</a>
+        <a href="/news">▤ News Intelligence</a>
+        <a href="/assistant">🤖 AI Assistant</a>
+        <a href="/insurance">◇ Insurance (Demo)</a>
+        <a href="/reports">▣ Reports</a>
+        <a href="/settings">⚙ Settings</a>
+    </nav>
+
+    <div class="side-bottom">
+        <div class="online">
+            <i></i> Systems operational
+        </div>
+
+        ARAN AI v1.0 • Hackathon Prototype
+    </div>
+
+</aside>
+
+
+<main class="page-shell">
+
+    <!-- HEADER -->
+    <header class="page-top">
+
+        <div class="page-title">
+
+            <div class="tag">
+                EXPOSURE & CRITICAL ASSETS
+            </div>
+
+            <h1>Infrastructure</h1>
+
+            <p>
+                Power, roads, hospitals and shelters — shown independently for faster decisions.
+            </p>
+
+        </div>
+
+        <div class="page-actions">
+
+            <button class="module-btn">
+                EN / தமிழ்
+            </button>
+
+            <a href="/dashboard">
+                <button class="module-btn">
+                    ← Dashboard
+                </button>
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- LIVE HAZARD CONTEXT -->
+    <div class="live-context">
+
+        <div class="live-context-left">
+
+            <span class="live-dot"></span>
+
+            <div>
+
+                <strong id="hazardContext">
+                    Checking official disaster information...
+                </strong>
+
+                <small id="hazardDetails">
+                    Connecting to ARAN AI live data services
+                </small>
+
+            </div>
+
+        </div>
+
+        <div class="source-badge" id="sourceBadge">
+            CONNECTING
+        </div>
+
+    </div>
+
+
+    <!-- ASSET CARDS -->
+    <div class="asset-grid">
+
+        <!-- POWER -->
+        <div class="asset-card">
+
+            <div class="asset-icon">
+                ⚡
+            </div>
+
+            <small>
+                POWER STATIONS
+            </small>
+
+            <strong style="color:var(--red)">
+                12
+            </strong>
+
+            <p>
+                Prototype asset inventory for monitored coastal zones.
+            </p>
+
+            <div class="riskbar">
+                <i id="powerBar" style="width:78%"></i>
+            </div>
+
+            <div class="context-risk">
+                Current hazard context:
+                <span id="powerRisk" class="risk-high">
+                    Checking...
+                </span>
+            </div>
+
+        </div>
+
+
+        <!-- ROADS -->
+        <div class="asset-card">
+
+            <div class="asset-icon">
+                ▱
+            </div>
+
+            <small>
+                MAJOR ROADS
+            </small>
+
+            <strong style="color:var(--orange)">
+                28
+            </strong>
+
+            <p>
+                Prototype road exposure inventory requiring monitoring.
+            </p>
+
+            <div class="riskbar">
+                <i id="roadBar" style="width:61%"></i>
+            </div>
+
+            <div class="context-risk">
+                Current hazard context:
+                <span id="roadRisk" class="risk-medium">
+                    Checking...
+                </span>
+            </div>
+
+        </div>
+
+
+        <!-- HOSPITALS -->
+        <div class="asset-card">
+
+            <div class="asset-icon">
+                ✚
+            </div>
+
+            <small>
+                HOSPITALS
+            </small>
+
+            <strong style="color:var(--purple)">
+                05
+            </strong>
+
+            <p>
+                Prototype critical medical facility inventory.
+            </p>
+
+            <div class="riskbar">
+                <i id="hospitalBar" style="width:42%"></i>
+            </div>
+
+            <div class="context-risk">
+                Current hazard context:
+                <span id="hospitalRisk" class="risk-low">
+                    Checking...
+                </span>
+            </div>
+
+        </div>
+
+
+        <!-- SHELTERS -->
+        <div class="asset-card">
+
+            <div class="asset-icon">
+                ⌂
+            </div>
+
+            <small>
+                SHELTERS
+            </small>
+
+            <strong style="color:var(--green)">
+                42
+            </strong>
+
+            <p>
+                Prototype emergency shelter inventory.
+            </p>
+
+            <div class="riskbar">
+                <i id="shelterBar" style="width:72%"></i>
+            </div>
+
+            <div class="context-risk">
+                Current hazard context:
+                <span id="shelterRisk" class="risk-low">
+                    Checking...
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PROTOTYPE DISCLAIMER -->
+    <div class="prototype-note">
+
+        <strong>Prototype data note:</strong>
+
+        Asset counts shown above represent the current demonstration
+        inventory. They are not presented as official infrastructure
+        inventories. Current hazard context is retrieved from the
+        connected ARAN AI disaster-information feed.
+
+    </div>
+
+
+    <!-- PRIORITY QUEUE -->
+    <section class="module-content" style="margin-top:12px">
+
+        <h2>
+            Infrastructure Priority Queue
+        </h2>
+
+        <table class="info-table">
+
+            <tr>
+                <th>ASSET</th>
+                <th>LOCATION</th>
+                <th>RISK</th>
+                <th>ACTION</th>
+            </tr>
+
+            <tr>
+                <td>
+                    Power Station
+                </td>
+
+                <td>
+                    Nagapattinam
+                </td>
+
+                <td>
+                    <span id="queuePowerRisk" class="status-pill unknown">
+                        CHECKING
+                    </span>
+                </td>
+
+                <td id="queuePowerAction">
+                    Assess backup-power readiness
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>
+                    Coastal Road
+                </td>
+
+                <td>
+                    Cuddalore
+                </td>
+
+                <td>
+                    <span id="queueRoadRisk" class="status-pill unknown">
+                        CHECKING
+                    </span>
+                </td>
+
+                <td id="queueRoadAction">
+                    Monitor rainfall and flooding exposure
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>
+                    Medical Shelter
+                </td>
+
+                <td>
+                    Chennai
+                </td>
+
+                <td>
+                    <span id="queueShelterRisk" class="status-pill unknown">
+                        CHECKING
+                    </span>
+                </td>
+
+                <td id="queueShelterAction">
+                    Maintain emergency readiness
+                </td>
+            </tr>
+
+        </table>
+
+        <div class="data-time" id="dataTime">
+            Waiting for official data...
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+    /*
+     * ============================================================
+     * ARAN AI — INFRASTRUCTURE HAZARD CONTEXT
+     * ============================================================
+     *
+     * This page uses the existing /api/alerts endpoint.
+     *
+     * Infrastructure asset counts remain DEMO / PROTOTYPE values.
+     * The current hazard context comes from the connected
+     * official disaster information feed.
+     *
+     * No artificial government warning is generated here.
+     * ============================================================
+     */
+
+
+    const hazardContext = document.getElementById("hazardContext");
+    const hazardDetails = document.getElementById("hazardDetails");
+    const sourceBadge = document.getElementById("sourceBadge");
+    const dataTime = document.getElementById("dataTime");
+
+
+    const powerRisk = document.getElementById("powerRisk");
+    const roadRisk = document.getElementById("roadRisk");
+    const hospitalRisk = document.getElementById("hospitalRisk");
+    const shelterRisk = document.getElementById("shelterRisk");
+
+
+    const queuePowerRisk = document.getElementById("queuePowerRisk");
+    const queueRoadRisk = document.getElementById("queueRoadRisk");
+    const queueShelterRisk = document.getElementById("queueShelterRisk");
+
+
+    const queuePowerAction = document.getElementById("queuePowerAction");
+    const queueRoadAction = document.getElementById("queueRoadAction");
+    const queueShelterAction = document.getElementById("queueShelterAction");
+
+
+    function cleanText(value) {
+
+        if (!value) {
+            return "";
+        }
+
+        return String(value).trim();
+
+    }
+
+
+    function getRiskFromAlerts(alerts) {
+
+        if (!alerts || !Array.isArray(alerts) || alerts.length === 0) {
+
+            return {
+                level: "LOW",
+                label: "NO ACTIVE HIGH-RISK ALERT",
+                score: 20
+            };
+
+        }
+
+
+        let high = 0;
+        let medium = 0;
+
+        alerts.forEach(alert => {
+
+            const severity =
+                cleanText(alert.severity).toUpperCase();
+
+            if (severity === "HIGH") {
+                high++;
+            }
+
+            else if (severity === "MEDIUM") {
+                medium++;
+            }
+
+        });
+
+
+        if (high > 0) {
+
+            return {
+                level: "HIGH",
+                label: "HIGH",
+                score: 85
+            };
+
+        }
+
+
+        if (medium > 0) {
+
+            return {
+                level: "MEDIUM",
+                label: "MEDIUM",
+                score: 60
+            };
+
+        }
+
+
+        return {
+            level: "LOW",
+            label: "LOW",
+            score: 25
+        };
+
+    }
+
+
+    function setRiskElement(element, risk) {
+
+        if (!element) {
+            return;
+        }
+
+
+        element.textContent = risk.label;
+
+        element.classList.remove(
+            "risk-high",
+            "risk-medium",
+            "risk-low",
+            "risk-unknown"
+        );
+
+
+        if (risk.level === "HIGH") {
+
+            element.classList.add("risk-high");
+
+        }
+
+        else if (risk.level === "MEDIUM") {
+
+            element.classList.add("risk-medium");
+
+        }
+
+        else {
+
+            element.classList.add("risk-low");
+
+        }
+
+    }
+
+
+    function setQueueRisk(element, risk) {
+
+        if (!element) {
+            return;
+        }
+
+
+        element.textContent = risk.label;
+
+        element.classList.remove(
+            "high",
+            "medium",
+            "low",
+            "unknown"
+        );
+
+
+        if (risk.level === "HIGH") {
+
+            element.classList.add("high");
+
+        }
+
+        else if (risk.level === "MEDIUM") {
+
+            element.classList.add("medium");
+
+        }
+
+        else {
+
+            element.classList.add("low");
+
+        }
+
+    }
+
+
+    function setBar(id, percentage) {
+
+        const bar = document.getElementById(id);
+
+        if (!bar) {
+            return;
+        }
+
+        bar.style.width = percentage + "%";
+
+    }
+
+
+    function updateInfrastructure(alerts, source) {
+
+        const risk = getRiskFromAlerts(alerts);
+
+
+        /*
+         * Current hazard context
+         */
+
+        if (risk.level === "HIGH") {
+
+            hazardContext.textContent =
+                "High-severity hazard information detected";
+
+            hazardDetails.textContent =
+                "Infrastructure preparedness should be reviewed against the latest official advisory.";
+
+        }
+
+        else if (risk.level === "MEDIUM") {
+
+            hazardContext.textContent =
+                "Moderate hazard information detected";
+
+            hazardDetails.textContent =
+                "Infrastructure exposure should be monitored against the latest official advisory.";
+
+        }
+
+        else {
+
+            hazardContext.textContent =
+                "No high-severity infrastructure hazard detected";
+
+            hazardDetails.textContent =
+                "Continue monitoring official disaster and weather information.";
+
+        }
+
+
+        sourceBadge.textContent =
+            source || "OFFICIAL FEED";
+
+
+        /*
+         * Apply current hazard context to assets.
+         *
+         * These are NOT vulnerability predictions.
+         * They are contextual risk indicators for the prototype.
+         */
+
+        setRiskElement(powerRisk, risk);
+        setRiskElement(roadRisk, risk);
+        setRiskElement(hospitalRisk, risk);
+        setRiskElement(shelterRisk, risk);
+
+
+        /*
+         * Visual bars
+         */
+
+        setBar("powerBar", risk.score);
+        setBar("roadBar", Math.max(20, risk.score - 10));
+        setBar("hospitalBar", Math.max(15, risk.score - 20));
+        setBar("shelterBar", Math.max(20, risk.score - 15));
+
+
+        /*
+         * Priority queue
+         */
+
+        setQueueRisk(queuePowerRisk, risk);
+        setQueueRisk(queueRoadRisk, risk);
+        setQueueRisk(queueShelterRisk, risk);
+
+
+        /*
+         * Actions
+         */
+
+        if (risk.level === "HIGH") {
+
+            queuePowerAction.textContent =
+                "Review backup power and emergency readiness";
+
+            queueRoadAction.textContent =
+                "Monitor flooding and access conditions";
+
+            queueShelterAction.textContent =
+                "Verify shelter readiness and accessibility";
+
+        }
+
+        else if (risk.level === "MEDIUM") {
+
+            queuePowerAction.textContent =
+                "Review backup power readiness";
+
+            queueRoadAction.textContent =
+                "Monitor rainfall and flooding exposure";
+
+            queueShelterAction.textContent =
+                "Maintain emergency readiness";
+
+        }
+
+        else {
+
+            queuePowerAction.textContent =
+                "Maintain backup-power readiness";
+
+            queueRoadAction.textContent =
+                "Continue monitoring conditions";
+
+            queueShelterAction.textContent =
+                "Maintain normal emergency readiness";
+
+        }
+
+
+        /*
+         * Timestamp
+         */
+
+        const now = new Date();
+
+        dataTime.textContent =
+            "Infrastructure context updated: " +
+            now.toLocaleString();
+
+    }
+
+
+    async function loadInfrastructureContext() {
+
+        try {
+
+            sourceBadge.textContent = "CONNECTING";
+
+
+            const response =
+                await fetch("/api/alerts", {
+                    cache: "no-store"
+                });
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Alert API returned HTTP " +
+                    response.status
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            const alerts =
+                Array.isArray(data.alerts)
+                    ? data.alerts
+                    : [];
+
+
+            updateInfrastructure(
+                alerts,
+                data.source || "IMD LIVE FEED"
+            );
+
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "ARAN AI Infrastructure:",
+                error
+            );
+
+
+            hazardContext.textContent =
+                "Live hazard context unavailable";
+
+            hazardDetails.textContent =
+                "Infrastructure inventory remains available as prototype reference data.";
+
+            sourceBadge.textContent =
+                "OFFLINE";
+
+
+            setRiskElement(
+                powerRisk,
+                {
+                    level: "LOW",
+                    label: "UNAVAILABLE",
+                    score: 20
+                }
+            );
+
+
+            setRiskElement(
+                roadRisk,
+                {
+                    level: "LOW",
+                    label: "UNAVAILABLE",
+                    score: 20
+                }
+            );
+
+
+            setRiskElement(
+                hospitalRisk,
+                {
+                    level: "LOW",
+                    label: "UNAVAILABLE",
+                    score: 20
+                }
+            );
+
+
+            setRiskElement(
+                shelterRisk,
+                {
+                    level: "LOW",
+                    label: "UNAVAILABLE",
+                    score: 20
+                }
+            );
+
+
+            dataTime.textContent =
+                "Could not retrieve live hazard context.";
+
+        }
+
+    }
+
+
+    /*
+     * Initial load
+     */
+
+    loadInfrastructureContext();
+
+
+    /*
+     * Refresh every 60 seconds.
+     *
+     * This keeps the infrastructure context aligned
+     * with the live alert feed.
+     */
+
+    setInterval(
+        loadInfrastructureContext,
+        60 * 1000
+    );
+
+</script>
+
+</body>
+</html>

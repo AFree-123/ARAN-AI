@@ -1,0 +1,1542 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>ARAN AI — News Intelligence</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <style>
+
+        .live-bar {
+            margin-top: 14px;
+            padding: 14px 18px;
+            border: 1px solid rgba(0,200,255,.25);
+            border-radius: 12px;
+            background: rgba(8,35,55,.72);
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .live-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #28e98c;
+            box-shadow: 0 0 12px rgba(40,233,140,.8);
+        }
+
+        .live-left strong {
+            display: block;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .live-left small {
+            color: #8db4cc;
+            font-size: 11px;
+        }
+
+        .source-pill {
+            padding: 6px 11px;
+            border-radius: 20px;
+            border: 1px solid rgba(40,233,140,.35);
+            color: #42e69a;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        .news-layout {
+            display: grid;
+            grid-template-columns: 1.8fr 1fr;
+            gap: 14px;
+            margin-top: 14px;
+        }
+
+        .news-card {
+            padding: 17px;
+            margin-top: 10px;
+
+            border-radius: 11px;
+
+            background: rgba(255,255,255,.025);
+            border: 1px solid rgba(255,255,255,.07);
+
+            border-left: 3px solid #28b8ff;
+        }
+
+        .news-card.high {
+            border-left-color: #ff5267;
+        }
+
+        .news-card.medium {
+            border-left-color: #ffad3d;
+        }
+
+        .news-card.low {
+            border-left-color: #35e98c;
+        }
+
+        .news-source {
+            color: #39d5ff;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+        }
+
+        .news-title {
+            margin-top: 8px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .news-summary {
+            margin-top: 8px;
+            color: #8db4cc;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .news-meta {
+            margin-top: 10px;
+            color: #628ca2;
+            font-size: 10px;
+        }
+
+        .verified {
+            display: inline-block;
+            margin-left: 7px;
+            padding: 3px 7px;
+            border-radius: 10px;
+            color: #42e69a;
+            background: rgba(66,230,154,.08);
+            border: 1px solid rgba(66,230,154,.2);
+        }
+
+        .rules-list {
+            color: #8db4cc;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .rules-list strong {
+            color: #fff;
+        }
+
+        .empty-state {
+            padding: 25px 10px;
+            text-align: center;
+            color: #42e69a;
+            font-size: 13px;
+        }
+
+        .error-state {
+            padding: 20px 10px;
+            color: #ff7180;
+            font-size: 12px;
+        }
+
+        .refresh-info {
+            margin-top: 12px;
+            color: #648da3;
+            font-size: 10px;
+        }
+
+        @media (max-width: 900px) {
+
+            .news-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .live-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+     ===================================================== -->
+
+<aside class="sidebar">
+
+    <div class="side-logo">
+
+        <a href="/dashboard">
+
+            <img src="/static/images/aran-logo.svg">
+
+        </a>
+
+    </div>
+
+
+    <nav class="nav">
+
+        <a href="/dashboard">
+            ⌂ Dashboard
+        </a>
+
+        <a href="/live-alerts">
+            🔔 Live Alerts
+        </a>
+
+        <a href="/risk-map">
+            ▧ Risk Map
+        </a>
+
+        <a href="/infrastructure">
+            ▦ Infrastructure
+        </a>
+
+        <a href="/shelters">
+            ♧ Evacuation & Shelters
+        </a>
+
+        <a href="/weather">
+            ☁ Weather & Forecast
+        </a>
+
+        <a href="/news">
+            ▤ News Intelligence
+        </a>
+
+        <a href="/assistant">
+            🤖 AI Assistant
+        </a>
+
+        <a href="/insurance">
+            ◇ Insurance (Demo)
+        </a>
+
+        <a href="/reports">
+            ▣ Reports
+        </a>
+
+        <a href="/settings">
+            ⚙ Settings
+        </a>
+
+    </nav>
+
+
+    <div class="side-bottom">
+
+        <div class="online">
+
+            <i></i>
+
+            Systems operational
+
+        </div>
+
+        ARAN AI v1.0 • Hackathon Prototype
+
+    </div>
+
+</aside>
+
+
+
+<!-- =====================================================
+     MAIN
+     ===================================================== -->
+
+<main class="page-shell">
+
+
+    <!-- HEADER -->
+
+    <header class="page-top">
+
+        <div class="page-title">
+
+            <div class="tag">
+                DISASTER NEWS INTELLIGENCE
+            </div>
+
+            <h1>
+                News Intelligence
+            </h1>
+
+            <p>
+                Relevant disaster information only — with source,
+                time, location and a simple explanation.
+            </p>
+
+        </div>
+
+
+        <div class="page-actions">
+
+            <button
+                class="module-btn"
+                id="languageToggle"
+                type="button"
+                aria-label="Change language"
+            >
+                EN / தமிழ்
+            </button>
+
+            <a href="/dashboard">
+
+                <button class="module-btn">
+                    ← Dashboard
+                </button>
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- LIVE STATUS -->
+
+    <div class="live-bar">
+
+        <div class="live-left">
+
+            <span class="live-dot"></span>
+
+            <div>
+
+                <strong id="liveStatus">
+                    Connecting to official disaster information...
+                </strong>
+
+                <small id="liveDetails">
+                    ARAN AI is retrieving the latest connected feed.
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="source-pill"
+            id="sourcePill"
+        >
+            CONNECTING
+        </div>
+
+    </div>
+
+
+
+    <!-- CONTENT -->
+
+    <div class="news-layout">
+
+
+        <!-- =================================================
+             LIVE UPDATES
+             ================================================= -->
+
+        <section class="module-content">
+
+            <h2>
+                Live Relevant Updates
+            </h2>
+
+
+            <div id="newsContainer">
+
+                <div class="refresh-info">
+                    Loading official information...
+                </div>
+
+            </div>
+
+
+            <div
+                class="refresh-info"
+                id="refreshInfo"
+            >
+                Waiting for live data...
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             SOURCE RULES
+             ================================================= -->
+
+        <section class="module-content">
+
+            <h2>
+                Source Rules
+            </h2>
+
+
+            <div class="rules-list">
+
+                <p>
+
+                    <strong>
+                        Priority sources
+                    </strong>
+
+                    <br>
+
+                    India Meteorological Department (IMD),
+                    NDMA, state disaster-management authorities,
+                    district administrations and other
+                    authoritative government sources.
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Grounding
+                    </strong>
+
+                    <br>
+
+                    ARAN AI preserves the original source meaning
+                    and separates verified information from
+                    AI-generated explanation.
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        No invented warnings
+                    </strong>
+
+                    <br>
+
+                    ARAN AI does not create evacuation orders,
+                    road closures, cyclone coordinates or
+                    government instructions.
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Unverified information
+                    </strong>
+
+                    <br>
+
+                    Information that cannot be verified should
+                    be explicitly labelled
+
+                    <span style="color:#ffb13b;">
+                        UNVERIFIED
+                    </span>.
+
+                </p>
+
+            </div>
+
+        </section>
+
+
+    </div>
+
+
+</main>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+     ===================================================== -->
+
+<script>
+
+/* =========================================================
+   ARAN AI — NEWS INTELLIGENCE
+   Bilingual UI: English / Tamil
+
+   IMPORTANT:
+   Official alert title/summary coming from the connected
+   source are preserved exactly as received.
+
+   Only ARAN AI's UI/status labels are translated.
+   ========================================================= */
+
+
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
+
+const newsContainer =
+    document.getElementById("newsContainer");
+
+const liveStatus =
+    document.getElementById("liveStatus");
+
+const liveDetails =
+    document.getElementById("liveDetails");
+
+const sourcePill =
+    document.getElementById("sourcePill");
+
+const refreshInfo =
+    document.getElementById("refreshInfo");
+
+const languageToggle =
+    document.getElementById("languageToggle");
+
+
+/* =========================================================
+   LANGUAGE STATE
+   ========================================================= */
+
+let currentLanguage =
+    localStorage.getItem("aranNewsLanguage") || "en";
+
+let lastAlerts = [];
+
+
+/* =========================================================
+   TRANSLATIONS
+   ========================================================= */
+
+const translations = {
+
+    en: {
+
+        pageTag:
+            "DISASTER NEWS INTELLIGENCE",
+
+        pageTitle:
+            "News Intelligence",
+
+        pageSubtitle:
+            "Relevant disaster information only — with source, time, location and a simple explanation.",
+
+        dashboard:
+            "← Dashboard",
+
+
+        liveConnecting:
+            "Connecting to official disaster information...",
+
+        liveRetrieving:
+            "ARAN AI is retrieving the latest connected feed.",
+
+        connecting:
+            "CONNECTING",
+
+
+        liveUpdates:
+            "Live Relevant Updates",
+
+        loading:
+            "Loading official information...",
+
+        waiting:
+            "Waiting for live data...",
+
+
+        sourceRules:
+            "Source Rules",
+
+        prioritySources:
+            "Priority sources",
+
+        priorityText:
+            "India Meteorological Department (IMD), NDMA, state disaster-management authorities, district administrations and other authoritative government sources.",
+
+
+        grounding:
+            "Grounding",
+
+        groundingText:
+            "ARAN AI preserves the original source meaning and separates verified information from AI-generated explanation.",
+
+
+        noInvented:
+            "No invented warnings",
+
+        noInventedText:
+            "ARAN AI does not create evacuation orders, road closures, cyclone coordinates or government instructions.",
+
+
+        unverified:
+            "Unverified information",
+
+        unverifiedText:
+            "Information that cannot be verified should be explicitly labelled",
+
+        unverifiedWord:
+            "UNVERIFIED",
+
+
+        officialUnavailable:
+            "Official disaster feed unavailable",
+
+        verifyAuthorities:
+            "Please verify current warnings with official authorities.",
+
+
+        noActive:
+            "No active disaster update detected",
+
+        noRelevant:
+            "No relevant official alert is currently available in the connected feed.",
+
+        continueMonitoring:
+            "Continue monitoring official sources.",
+
+
+        officialAvailable:
+            "Official disaster information available",
+
+        reviewUpdates:
+            "Review the latest updates below.",
+
+
+        highDetected:
+            "High-severity official information detected",
+
+        reviewAdvisory:
+            "Review the latest official advisory details.",
+
+
+        mediumDetected:
+            "Moderate official information detected",
+
+        monitorAdvisory:
+            "Monitor the latest official advisory.",
+
+
+        officialFeedUnavailable:
+            "Unable to retrieve the connected official feed right now.",
+
+        noSubstitute:
+            "ARAN AI will not substitute unverified information for an official warning.",
+
+
+        liveUpdated:
+            "Live feed updated",
+
+        liveUnavailable:
+            "Live feed unavailable.",
+
+
+        officialSource:
+            "Official source",
+
+        locationNotSpecified:
+            "Location not specified",
+
+        verified:
+            "✓ VERIFIED",
+
+        unverifiedBadge:
+            "UNVERIFIED"
+
+    },
+
+
+    ta: {
+
+        pageTag:
+            "பேரிடர் செய்தி நுண்ணறிவு",
+
+        pageTitle:
+            "செய்தி நுண்ணறிவு",
+
+        pageSubtitle:
+            "ஆதாரம், நேரம், இடம் மற்றும் எளிய விளக்கத்துடன் தொடர்புடைய பேரிடர் தகவல்கள் மட்டும்.",
+
+        dashboard:
+            "← டாஷ்போர்டு",
+
+
+        liveConnecting:
+            "அதிகாரப்பூர்வ பேரிடர் தகவலுடன் இணைக்கப்படுகிறது...",
+
+        liveRetrieving:
+            "ARAN AI சமீபத்திய இணைக்கப்பட்ட தகவல் ஊட்டத்தைப் பெறுகிறது.",
+
+        connecting:
+            "இணைக்கப்படுகிறது",
+
+
+        liveUpdates:
+            "நேரடி தொடர்புடைய தகவல்கள்",
+
+        loading:
+            "அதிகாரப்பூர்வ தகவல்கள் ஏற்றப்படுகின்றன...",
+
+        waiting:
+            "நேரடி தகவலுக்காக காத்திருக்கிறது...",
+
+
+        sourceRules:
+            "ஆதார விதிமுறைகள்",
+
+        prioritySources:
+            "முக்கிய ஆதாரங்கள்",
+
+        priorityText:
+            "இந்திய வானிலை ஆய்வு மையம் (IMD), NDMA, மாநில பேரிடர் மேலாண்மை அமைப்புகள், மாவட்ட நிர்வாகங்கள் மற்றும் பிற அதிகாரப்பூர்வ அரசு ஆதாரங்கள்.",
+
+
+        grounding:
+            "தகவல் அடிப்படை",
+
+        groundingText:
+            "ARAN AI மூல ஆதாரத்தின் அர்த்தத்தைப் பாதுகாத்து, சரிபார்க்கப்பட்ட தகவலையும் AI உருவாக்கிய விளக்கத்தையும் தனித்தனியாகக் காட்டுகிறது.",
+
+
+        noInvented:
+            "கற்பனை செய்யப்பட்ட எச்சரிக்கைகள் இல்லை",
+
+        noInventedText:
+            "ARAN AI வெளியேற்ற உத்தரவுகள், சாலை மூடல் தகவல்கள், சூறாவளி coordinates அல்லது அரசு அறிவுறுத்தல்களை உருவாக்காது.",
+
+
+        unverified:
+            "சரிபார்க்கப்படாத தகவல்",
+
+        unverifiedText:
+            "சரிபார்க்க முடியாத தகவல்கள் தெளிவாகக் குறிக்கப்பட வேண்டும்:",
+
+        unverifiedWord:
+            "சரிபார்க்கப்படாதது",
+
+
+        officialUnavailable:
+            "அதிகாரப்பூர்வ பேரிடர் தகவல் ஊட்டம் கிடைக்கவில்லை",
+
+        verifyAuthorities:
+            "தற்போதைய எச்சரிக்கைகளை அதிகாரப்பூர்வ அதிகாரிகளிடம் சரிபார்க்கவும்.",
+
+
+        noActive:
+            "தற்போது செயலில் உள்ள பேரிடர் தகவல் இல்லை",
+
+        noRelevant:
+            "இணைக்கப்பட்ட தகவல் ஊட்டத்தில் தொடர்புடைய அதிகாரப்பூர்வ எச்சரிக்கை தற்போது இல்லை.",
+
+        continueMonitoring:
+            "அதிகாரப்பூர்வ ஆதாரங்களை தொடர்ந்து கண்காணிக்கவும்.",
+
+
+        officialAvailable:
+            "அதிகாரப்பூர்வ பேரிடர் தகவல் கிடைக்கிறது",
+
+        reviewUpdates:
+            "கீழே உள்ள சமீபத்திய தகவல்களைப் பார்க்கவும்.",
+
+
+        highDetected:
+            "அதிக தீவிரத்தன்மை கொண்ட அதிகாரப்பூர்வ தகவல் கண்டறியப்பட்டது",
+
+        reviewAdvisory:
+            "சமீபத்திய அதிகாரப்பூர்வ அறிவுறுத்தல் விவரங்களைப் பார்க்கவும்.",
+
+
+        mediumDetected:
+            "மிதமான தீவிரத்தன்மை கொண்ட அதிகாரப்பூர்வ தகவல் கண்டறியப்பட்டது",
+
+        monitorAdvisory:
+            "சமீபத்திய அதிகாரப்பூர்வ அறிவுறுத்தலைக் கண்காணிக்கவும்.",
+
+
+        officialFeedUnavailable:
+            "இணைக்கப்பட்ட அதிகாரப்பூர்வ தகவல் ஊட்டத்தை தற்போது பெற முடியவில்லை.",
+
+        noSubstitute:
+            "சரிபார்க்கப்படாத தகவலை அதிகாரப்பூர்வ எச்சரிக்கைக்கு மாற்றாக ARAN AI பயன்படுத்தாது.",
+
+
+        liveUpdated:
+            "நேரடி தகவல் புதுப்பிக்கப்பட்டது",
+
+        liveUnavailable:
+            "நேரடி தகவல் கிடைக்கவில்லை.",
+
+
+        officialSource:
+            "அதிகாரப்பூர்வ ஆதாரம்",
+
+        locationNotSpecified:
+            "இடம் குறிப்பிடப்படவில்லை",
+
+        verified:
+            "✓ சரிபார்க்கப்பட்டது",
+
+        unverifiedBadge:
+            "சரிபார்க்கப்படவில்லை"
+
+    }
+
+};
+
+
+/* =========================================================
+   TRANSLATION HELPER
+   ========================================================= */
+
+function t(key) {
+
+    return (
+        translations[currentLanguage][key] ||
+        translations.en[key] ||
+        key
+    );
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+
+        .replace(/&/g, "&amp;")
+
+        .replace(/</g, "&lt;")
+
+        .replace(/>/g, "&gt;")
+
+        .replace(/"/g, "&quot;")
+
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================================
+   STATIC PAGE TRANSLATION
+   ========================================================= */
+
+function applyLanguage() {
+
+    const tag =
+        document.querySelector(".page-title .tag");
+
+    const title =
+        document.querySelector(".page-title h1");
+
+    const subtitle =
+        document.querySelector(".page-title p");
+
+    const dashboardButton =
+        document.querySelector(
+            'a[href="/dashboard"] .module-btn'
+        );
+
+
+    if (tag) {
+
+        tag.textContent =
+            t("pageTag");
+
+    }
+
+
+    if (title) {
+
+        title.textContent =
+            t("pageTitle");
+
+    }
+
+
+    if (subtitle) {
+
+        subtitle.textContent =
+            t("pageSubtitle");
+
+    }
+
+
+    if (dashboardButton) {
+
+        dashboardButton.textContent =
+            t("dashboard");
+
+    }
+
+
+    const sections =
+        document.querySelectorAll(
+            ".module-content h2"
+        );
+
+
+    if (sections[0]) {
+
+        sections[0].textContent =
+            t("liveUpdates");
+
+    }
+
+
+    if (sections[1]) {
+
+        sections[1].textContent =
+            t("sourceRules");
+
+    }
+
+
+    const rules =
+        document.querySelectorAll(
+            ".rules-list p"
+        );
+
+
+    if (rules[0]) {
+
+        rules[0].innerHTML =
+            `<strong>${escapeHtml(
+                t("prioritySources")
+            )}</strong><br>` +
+
+            escapeHtml(
+                t("priorityText")
+            );
+
+    }
+
+
+    if (rules[1]) {
+
+        rules[1].innerHTML =
+            `<strong>${escapeHtml(
+                t("grounding")
+            )}</strong><br>` +
+
+            escapeHtml(
+                t("groundingText")
+            );
+
+    }
+
+
+    if (rules[2]) {
+
+        rules[2].innerHTML =
+            `<strong>${escapeHtml(
+                t("noInvented")
+            )}</strong><br>` +
+
+            escapeHtml(
+                t("noInventedText")
+            );
+
+    }
+
+
+    if (rules[3]) {
+
+        rules[3].innerHTML =
+            `<strong>${escapeHtml(
+                t("unverified")
+            )}</strong><br>` +
+
+            escapeHtml(
+                t("unverifiedText")
+            ) +
+
+            ` <span style="color:#ffb13b;">` +
+
+            escapeHtml(
+                t("unverifiedWord")
+            ) +
+
+            `</span>.`;
+
+    }
+
+
+    if (languageToggle) {
+
+        languageToggle.textContent =
+            currentLanguage === "en"
+                ? "EN / தமிழ்"
+                : "தமிழ் / EN";
+
+    }
+
+
+    if (!lastAlerts.length) {
+
+        newsContainer.innerHTML =
+            `<div class="refresh-info">` +
+
+            escapeHtml(
+                t("loading")
+            ) +
+
+            `</div>`;
+
+        refreshInfo.textContent =
+            t("waiting");
+
+    }
+
+
+    renderStatusFromAlerts(
+        lastAlerts
+    );
+
+}
+
+
+/* =========================================================
+   LANGUAGE TOGGLE
+   ========================================================= */
+
+languageToggle?.addEventListener(
+    "click",
+    () => {
+
+        currentLanguage =
+            currentLanguage === "en"
+                ? "ta"
+                : "en";
+
+
+        localStorage.setItem(
+            "aranNewsLanguage",
+            currentLanguage
+        );
+
+
+        applyLanguage();
+
+
+        /*
+         * Re-render current live data immediately
+         * in the selected UI language.
+         */
+
+        if (lastAlerts.length) {
+
+            renderNews(
+                lastAlerts
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   NORMALIZE SEVERITY
+   ========================================================= */
+
+function getSeverity(alert) {
+
+    const value =
+        String(
+            alert?.severity || "LOW"
+        ).toUpperCase();
+
+
+    if (value === "HIGH") {
+
+        return "high";
+
+    }
+
+
+    if (value === "MEDIUM") {
+
+        return "medium";
+
+    }
+
+
+    return "low";
+
+}
+
+
+/* =========================================================
+   STATUS TRANSLATION
+   ========================================================= */
+
+function renderStatusFromAlerts(
+    alerts
+) {
+
+    if (
+        !alerts ||
+        alerts.length === 0
+    ) {
+
+        liveStatus.textContent =
+            t("noActive");
+
+        liveDetails.textContent =
+            t("noRelevant");
+
+        return;
+
+    }
+
+
+    const hasHigh =
+        alerts.some(
+            alert =>
+                String(
+                    alert?.severity || ""
+                ).toUpperCase() === "HIGH"
+        );
+
+
+    const hasMedium =
+        alerts.some(
+            alert =>
+                String(
+                    alert?.severity || ""
+                ).toUpperCase() === "MEDIUM"
+        );
+
+
+    if (hasHigh) {
+
+        liveStatus.textContent =
+            t("highDetected");
+
+        liveDetails.textContent =
+            t("reviewAdvisory");
+
+    }
+
+    else if (hasMedium) {
+
+        liveStatus.textContent =
+            t("mediumDetected");
+
+        liveDetails.textContent =
+            t("monitorAdvisory");
+
+    }
+
+    else {
+
+        liveStatus.textContent =
+            t("officialAvailable");
+
+        liveDetails.textContent =
+            t("reviewUpdates");
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD LIVE INFORMATION
+   ========================================================= */
+
+async function loadNews() {
+
+    try {
+
+        sourcePill.textContent =
+            t("connecting");
+
+
+        const response =
+            await fetch(
+                "/api/alerts",
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Alert API HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const alerts =
+            Array.isArray(
+                data.alerts
+            )
+                ? data.alerts
+                : [];
+
+
+        lastAlerts =
+            alerts;
+
+
+        const source =
+            data.source ||
+            t("officialSource");
+
+
+        sourcePill.textContent =
+            source;
+
+
+        renderNews(
+            alerts
+        );
+
+
+        refreshInfo.textContent =
+            `${t("liveUpdated")}: ` +
+
+            new Date().toLocaleString(
+                currentLanguage === "ta"
+                    ? "ta-IN"
+                    : "en-IN"
+            );
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "ARAN AI News Intelligence:",
+            error
+        );
+
+
+        lastAlerts = [];
+
+
+        sourcePill.textContent =
+            "OFFLINE";
+
+
+        liveStatus.textContent =
+            t("officialUnavailable");
+
+
+        liveDetails.textContent =
+            t("verifyAuthorities");
+
+
+        newsContainer.innerHTML =
+
+            `<div class="error-state">` +
+
+            escapeHtml(
+                t("officialFeedUnavailable")
+            ) +
+
+            `<br><br>` +
+
+            escapeHtml(
+                t("noSubstitute")
+            ) +
+
+            `</div>`;
+
+
+        refreshInfo.textContent =
+            t("liveUnavailable");
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER NEWS
+   ========================================================= */
+
+function renderNews(
+    alerts
+) {
+
+    if (
+        !alerts ||
+        alerts.length === 0
+    ) {
+
+        liveStatus.textContent =
+            t("noActive");
+
+
+        liveDetails.textContent =
+            t("noRelevant");
+
+
+        newsContainer.innerHTML =
+
+            `<div class="empty-state">
+
+                ✓ ${escapeHtml(
+                    t("noActive")
+                )}
+
+                <br>
+
+                <span
+                    style="
+                        font-size:11px;
+                        color:#7399ad;
+                    "
+                >
+                    ${escapeHtml(
+                        t("continueMonitoring")
+                    )}
+                </span>
+
+            </div>`;
+
+
+        return;
+
+    }
+
+
+    renderStatusFromAlerts(
+        alerts
+    );
+
+
+    newsContainer.innerHTML =
+        "";
+
+
+    /*
+     * Display latest 10 alerts.
+     */
+
+    alerts
+        .slice(0, 10)
+        .forEach(
+            alert => {
+
+                const severity =
+                    getSeverity(
+                        alert
+                    );
+
+
+                const title =
+
+                    alert?.title ||
+
+                    alert?.hazard ||
+
+                    t("officialSource");
+
+
+                const summary =
+
+                    alert?.summary ||
+
+                    t("officialAvailable");
+
+
+                const location =
+
+                    alert?.location ||
+
+                    t("locationNotSpecified");
+
+
+                const date =
+
+                    alert?.date ||
+
+                    alert?.issue_time ||
+
+                    alert?.updated_at ||
+
+                    "";
+
+
+                const source =
+
+                    alert?.source ||
+
+                    t("officialSource");
+
+
+                /*
+                 * IMPORTANT:
+                 *
+                 * Official title/summary are preserved
+                 * exactly as received from the source.
+                 *
+                 * We do not silently translate or alter
+                 * official warning wording.
+                 */
+
+
+                const verified =
+
+                    alert?.verified === true
+
+                        ?
+
+                        `<span class="verified">
+                            ${escapeHtml(
+                                t("verified")
+                            )}
+                        </span>`
+
+                        :
+
+                        `<span
+                            class="verified"
+                            style="
+                                color:#ffb13b;
+                                border-color:
+                                rgba(255,177,59,.25);
+                                background:
+                                rgba(255,177,59,.06);
+                            "
+                        >
+                            ${escapeHtml(
+                                t("unverifiedBadge")
+                            )}
+                        </span>`;
+
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "news-card " +
+                    severity;
+
+
+                card.innerHTML = `
+
+                    <div class="news-source">
+
+                        ${escapeHtml(
+                            source
+                        )}
+
+                        ${verified}
+
+                    </div>
+
+
+                    <div class="news-title">
+
+                        ${escapeHtml(
+                            title
+                        )}
+
+                    </div>
+
+
+                    <div class="news-summary">
+
+                        ${escapeHtml(
+                            summary
+                        )}
+
+                    </div>
+
+
+                    <div class="news-meta">
+
+                        📍 ${escapeHtml(
+                            location
+                        )}
+
+                        ${
+                            date
+
+                                ? " • 🕒 " +
+                                  escapeHtml(
+                                      date
+                                  )
+
+                                : ""
+                        }
+
+                    </div>
+
+                `;
+
+
+                newsContainer.appendChild(
+                    card
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
+
+applyLanguage();
+
+loadNews();
+
+
+/* =========================================================
+   REFRESH EVERY 60 SECONDS
+   ========================================================= */
+
+setInterval(
+    loadNews,
+    60 * 1000
+);
+
+</script>
+
+
+</body>
+
+</html>

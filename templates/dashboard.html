@@ -1,0 +1,3869 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width,initial-scale=1"
+    >
+
+    <title>ARAN AI — Dashboard</title>
+
+
+    <!-- =====================================================
+         EXISTING ARAN AI CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="/static/css/style.css"
+    >
+
+
+    <!-- =====================================================
+         LEAFLET CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+
+    <!-- =====================================================
+         DASHBOARD INLINE CSS
+    ====================================================== -->
+
+    <style>
+
+        /* =====================================================
+           LIVE DATA
+        ===================================================== */
+
+        .live-value-loading {
+            opacity: 0.55;
+        }
+
+        .dashboard-source {
+            margin-top: 5px;
+            font-size: 11px;
+            opacity: 0.55;
+        }
+
+        .live-status {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .live-status.connected {
+            color: #55d68a;
+        }
+
+        .live-status.warning {
+            color: #f5c451;
+        }
+
+        .live-status.error {
+            color: #ff6b6b;
+        }
+
+
+        /* =====================================================
+           REAL LIVE MAP
+        ===================================================== */
+
+        #risk.map {
+            position: relative;
+            overflow: hidden;
+            min-height: 520px;
+            padding: 0 !important;
+            background: #061522 !important;
+        }
+
+
+        #aran-live-map {
+            position: absolute;
+            inset: 0;
+
+            width: 100%;
+            height: 100%;
+
+            min-height: 520px;
+
+            z-index: 1;
+        }
+
+
+        #aran-live-map .leaflet-container {
+            width: 100%;
+            height: 100%;
+
+            min-height: 520px;
+
+            background: #061522;
+        }
+
+
+        /* =====================================================
+           MAP TOOLBAR
+        ===================================================== */
+
+        #risk .map-tools {
+            position: absolute;
+
+            top: 14px;
+            left: 14px;
+
+            z-index: 1000;
+
+            display: flex;
+
+            gap: 8px;
+
+            flex-wrap: wrap;
+        }
+
+
+        #risk .map-tools button {
+            border: 1px solid rgba(100, 200, 255, 0.35);
+
+            background:
+                rgba(5, 25, 40, 0.92);
+
+            color: #ffffff;
+
+            border-radius: 10px;
+
+            padding: 9px 13px;
+
+            cursor: pointer;
+
+            backdrop-filter: blur(8px);
+
+            font-size: 12px;
+
+            transition:
+                0.2s ease;
+        }
+
+
+        #risk .map-tools button:hover {
+            background:
+                rgba(10, 55, 80, 0.95);
+
+            border-color:
+                rgba(100, 220, 255, 0.65);
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        #risk .map-tools button.active {
+            border-color:
+                #55dfff;
+
+            color:
+                #55dfff;
+        }
+
+
+        /* =====================================================
+           MAP LIVE STATUS
+        ===================================================== */
+
+        #mapLiveStatus {
+            position: absolute;
+
+            right: 14px;
+            top: 14px;
+
+            z-index: 1000;
+
+            padding: 8px 12px;
+
+            border-radius: 10px;
+
+            background:
+                rgba(4,20,35,.90);
+
+            border:
+                1px solid
+                rgba(100,200,255,.25);
+
+            color:
+                #8ddfff;
+
+            font-size:
+                11px;
+
+            backdrop-filter:
+                blur(8px);
+        }
+
+
+        /* =====================================================
+           MAP LEGEND
+        ===================================================== */
+
+        #mapLegend {
+            position: absolute;
+
+            left: 14px;
+            bottom: 14px;
+
+            z-index: 1000;
+
+            padding: 10px 13px;
+
+            border-radius: 10px;
+
+            background:
+                rgba(4,20,35,.90);
+
+            border:
+                1px solid
+                rgba(100,200,255,.25);
+
+            color:
+                white;
+
+            font-size:
+                11px;
+
+            backdrop-filter:
+                blur(8px);
+        }
+
+
+        .map-legend-row {
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            margin-bottom: 6px;
+        }
+
+
+        .map-legend-row:last-child {
+            margin-bottom: 0;
+        }
+
+
+        .legend-dot {
+            display: inline-block;
+
+            width: 9px;
+            height: 9px;
+
+            border-radius: 50%;
+        }
+
+
+        /* =====================================================
+           LEAFLET POPUP
+        ===================================================== */
+
+        .leaflet-popup-content-wrapper,
+        .leaflet-popup-tip {
+            background:
+                #071a2a;
+
+            color:
+                #ffffff;
+        }
+
+
+        .leaflet-popup-content {
+            font-size:
+                13px;
+
+            line-height:
+                1.55;
+        }
+
+
+        .leaflet-popup-content strong {
+            color:
+                #55dfff;
+        }
+
+
+        /* =====================================================
+           ALERT FEED
+        ===================================================== */
+
+        .feed-item {
+            border-left:
+                3px solid var(--orange);
+
+            margin-bottom:
+                12px;
+
+            padding:
+                14px;
+
+            border-radius:
+                12px;
+
+            background:
+                rgba(255,255,255,0.035);
+        }
+
+
+        .feed-item.high {
+            border-left-color:
+                var(--red);
+        }
+
+
+        .feed-item.medium {
+            border-left-color:
+                var(--orange);
+        }
+
+
+        .feed-item.low {
+            border-left-color:
+                var(--green);
+        }
+
+
+        .feed-top {
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            gap:
+                12px;
+
+            margin-bottom:
+                8px;
+        }
+
+
+        .feed-title {
+            font-weight:
+                700;
+
+            margin-bottom:
+                6px;
+        }
+
+
+        .feed-summary {
+            line-height:
+                1.5;
+
+            margin-bottom:
+                8px;
+        }
+
+
+        .feed-meta {
+            font-size:
+                11px;
+
+            opacity:
+                0.6;
+        }
+
+
+        .feed-empty {
+            padding:
+                30px 15px;
+
+            text-align:
+                center;
+
+            opacity:
+                0.65;
+        }
+
+
+        /* =====================================================
+           LIVE BADGE
+        ===================================================== */
+
+        .live-dot {
+            color:
+                #55d68a;
+        }
+
+
+        /* =====================================================
+           WEATHER
+        ===================================================== */
+
+        .weather-loading {
+            opacity:
+                0.55;
+        }
+
+
+        /* =====================================================
+           INSURANCE
+        ===================================================== */
+
+        .insurance-progress {
+            height:
+                8px;
+
+            width:
+                100%;
+
+            background:
+                rgba(255,255,255,0.08);
+
+            border-radius:
+                999px;
+
+            overflow:
+                hidden;
+
+            margin-top:
+                12px;
+        }
+
+
+        .insurance-progress i {
+            display:
+                block;
+
+            height:
+                100%;
+
+            width:
+                0%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #55d68a,
+                    #f5c451,
+                    #ff6b6b
+                );
+
+            transition:
+                width .5s ease;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 900px) {
+
+            #risk.map {
+                min-height:
+                    450px;
+            }
+
+            #aran-live-map {
+                min-height:
+                    450px;
+            }
+
+            #risk .map-tools {
+                max-width:
+                    calc(100% - 30px);
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside class="sidebar">
+
+    <div class="side-logo">
+
+        <a href="/dashboard">
+
+            <img
+                src="/static/images/aran-logo.svg"
+                alt="ARAN AI"
+            >
+
+        </a>
+
+    </div>
+
+
+    <nav class="nav">
+
+        <a
+            class="active"
+            href="/dashboard"
+        >
+            ⌂ Dashboard
+        </a>
+
+
+        <a href="/live-alerts">
+            🔔 Live Alerts
+        </a>
+
+
+        <a href="/risk-map">
+            ▧ Risk Map
+        </a>
+
+
+        <a href="/infrastructure">
+            ▦ Infrastructure
+        </a>
+
+
+        <a href="/shelters">
+            ♧ Evacuation & Shelters
+        </a>
+
+
+        <a href="/weather">
+            ☁ Weather & Forecast
+        </a>
+
+
+        <a href="/news">
+            ▤ News Intelligence
+        </a>
+
+
+        <a href="/assistant">
+            🤖 AI Assistant
+        </a>
+
+
+        <a href="/insurance">
+            ◇ Insurance
+        </a>
+
+
+        <a href="/reports">
+            ▣ Reports
+        </a>
+
+
+        <a href="/settings">
+            ⚙ Settings
+        </a>
+
+    </nav>
+
+
+    <div class="side-bottom">
+
+        <div class="online">
+
+            <i></i>
+
+            Systems operational
+
+        </div>
+
+        ARAN AI v1.0 • Hackathon Prototype
+
+    </div>
+
+</aside>
+
+
+
+<!-- =========================================================
+     MAIN DASHBOARD
+========================================================= -->
+
+<main class="dash">
+
+
+    <!-- =====================================================
+         TOP BAR
+    ====================================================== -->
+
+    <header class="top">
+
+        <input
+            id="dashboardSearch"
+            class="search"
+            placeholder="Search location, district, or ask a question..."
+        >
+
+
+        <div class="top-right">
+
+            <div class="pill monitor">
+
+                <span class="live-dot">
+                    ● LIVE MONITORING
+                </span>
+
+                <br>
+
+                <span class="small">
+                    Bay of Bengal • IMD feed
+                </span>
+
+            </div>
+
+
+            <div
+                class="pill"
+                id="dashboardTime"
+            >
+                Updating...
+            </div>
+
+
+            <div class="pill">
+                EN / தமிழ்
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         KPI CARDS
+    ====================================================== -->
+
+    <section class="kpis">
+
+
+        <!-- CYCLONE -->
+
+        <div class="kpi">
+
+            <small>
+                CYCLONE STATUS
+            </small>
+
+
+            <strong
+                id="cycloneStatus"
+                class="red live-value-loading"
+            >
+                CHECKING
+            </strong>
+
+
+            <span
+                id="cycloneDescription"
+                class="small"
+            >
+                Connecting to official IMD feed
+            </span>
+
+
+            <div
+                id="cycloneSource"
+                class="dashboard-source"
+            >
+                Source: IMD
+            </div>
+
+        </div>
+
+
+
+        <!-- RAINFALL -->
+
+        <div class="kpi">
+
+            <small>
+                24H RAINFALL
+            </small>
+
+
+            <strong
+                id="rainfallValue"
+                class="cyan live-value-loading"
+            >
+                —
+            </strong>
+
+
+            <span
+                id="rainfallDescription"
+                class="small"
+            >
+                Loading live precipitation
+            </span>
+
+
+            <div class="dashboard-source">
+                Source: Open-Meteo
+            </div>
+
+        </div>
+
+
+
+        <!-- ALERT LEVEL -->
+
+        <div class="kpi">
+
+            <small>
+                CURRENT ALERT LEVEL
+            </small>
+
+
+            <strong
+                id="alertLevel"
+                class="cyan live-value-loading"
+            >
+                CHECKING
+            </strong>
+
+
+            <span
+                id="alertDescription"
+                class="small"
+            >
+                Based on official IMD warnings
+            </span>
+
+
+            <div class="dashboard-source">
+                Source: IMD
+            </div>
+
+        </div>
+
+
+
+        <!-- ALERT COUNT -->
+
+        <div class="kpi">
+
+            <small>
+                ACTIVE / UPCOMING ALERTS
+            </small>
+
+
+            <strong
+                id="alertCount"
+                class="orange live-value-loading"
+            >
+                —
+            </strong>
+
+
+            <span class="small">
+                Tamil Nadu & Puducherry
+            </span>
+
+
+            <div class="dashboard-source">
+                Official warning feed
+            </div>
+
+        </div>
+
+
+
+        <!-- PARAMETRIC RISK -->
+
+        <div class="kpi">
+
+            <small>
+                PARAMETRIC RISK
+            </small>
+
+
+            <strong
+                id="insuranceStatus"
+                class="purple live-value-loading"
+            >
+                CHECKING
+            </strong>
+
+
+            <span
+                id="insuranceDescription"
+                class="small"
+            >
+                Rainfall trigger simulation
+            </span>
+
+
+            <div class="dashboard-source">
+                Source: Live meteorological data
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         MAIN GRID
+    ====================================================== -->
+
+    <div class="grid-main">
+
+
+        <!-- =================================================
+             REAL LIVE MAP
+        ================================================== -->
+
+        <section
+            id="risk"
+            class="map"
+        >
+
+            <!-- Real Leaflet map -->
+
+            <div
+                id="aran-live-map"
+            ></div>
+
+
+            <!-- MAP CONTROLS -->
+
+            <div class="map-tools">
+
+                <button
+                    id="mapSatelliteBtn"
+                    type="button"
+                    class="active"
+                >
+                    ◉ Satellite
+                </button>
+
+
+                <button
+                    id="mapRainfallBtn"
+                    type="button"
+                >
+                    ☁ Rainfall
+                </button>
+
+
+                <button
+                    id="mapStreetBtn"
+                    type="button"
+                >
+                    ▧ Street
+                </button>
+
+            </div>
+
+
+            <!-- LIVE STATUS -->
+
+            <div id="mapLiveStatus">
+                ● LIVE MAP
+            </div>
+
+
+            <!-- MAP LEGEND -->
+
+            <div id="mapLegend">
+
+                <div class="map-legend-row">
+
+                    <span
+                        class="legend-dot"
+                        style="background:#ff4d67"
+                    ></span>
+
+                    IMD Alert
+
+                </div>
+
+
+                <div class="map-legend-row">
+
+                    <span
+                        class="legend-dot"
+                        style="background:#ffd166"
+                    ></span>
+
+                    Monitoring Location
+
+                </div>
+
+
+                <div class="map-legend-row">
+
+                    <span
+                        class="legend-dot"
+                        style="background:#55dfff"
+                    ></span>
+
+                    GEE Rainfall Layer
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             LIVE DISASTER INTELLIGENCE
+        ================================================== -->
+
+        <section
+            id="alerts"
+            class="right-feed"
+        >
+
+            <div class="feed-head">
+
+                <h3>
+                    🔴 Live Disaster Intelligence
+                </h3>
+
+
+                <span
+                    class="small"
+                    id="feedStatus"
+                >
+                    Connecting...
+                </span>
+
+            </div>
+
+
+            <div id="feed">
+
+                <div class="feed-empty">
+
+                    Loading official IMD information...
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         LOWER PANELS
+    ====================================================== -->
+
+    <div class="lower">
+
+
+        <!-- =================================================
+             WEATHER
+        ================================================== -->
+
+        <section
+            id="weather"
+            class="panel"
+        >
+
+            <h3>
+                ☁ Weather & Forecast
+            </h3>
+
+
+            <div class="cards">
+
+
+                <div class="mini">
+
+                    <small>
+                        TEMPERATURE
+                    </small>
+
+
+                    <strong
+                        id="weatherTemperature"
+                        class="weather-loading"
+                    >
+                        —
+                    </strong>
+
+
+                    <span
+                        class="small"
+                        id="temperatureDescription"
+                    >
+                        Loading
+                    </span>
+
+                </div>
+
+
+
+                <div class="mini">
+
+                    <small>
+                        WIND
+                    </small>
+
+
+                    <strong
+                        id="weatherWind"
+                        class="weather-loading"
+                    >
+                        —
+                    </strong>
+
+
+                    <span
+                        class="small"
+                        id="windDescription"
+                    >
+                        Loading
+                    </span>
+
+                </div>
+
+
+
+                <div class="mini">
+
+                    <small>
+                        PRECIPITATION
+                    </small>
+
+
+                    <strong
+                        id="weatherRain"
+                        class="weather-loading"
+                    >
+                        —
+                    </strong>
+
+
+                    <span class="small">
+                        Current observation
+                    </span>
+
+                </div>
+
+
+
+                <div class="mini">
+
+                    <small>
+                        WEATHER SOURCE
+                    </small>
+
+
+                    <strong>
+                        Open-Meteo
+                    </strong>
+
+
+                    <span class="small">
+                        Meteorological feed
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             INFRASTRUCTURE
+        ================================================== -->
+
+        <section
+            id="infra"
+            class="panel"
+        >
+
+            <h3>
+                🏗 Infrastructure at Risk
+            </h3>
+
+
+            <div class="cards">
+
+
+                <div class="mini">
+
+                    <small>
+                        POWER STATIONS
+                    </small>
+
+
+                    <strong
+                        style="color:var(--red)"
+                    >
+                        12
+                    </strong>
+
+
+                    <span class="small">
+                        Prototype inventory
+                    </span>
+
+                </div>
+
+
+
+                <div class="mini">
+
+                    <small>
+                        MAJOR ROADS
+                    </small>
+
+
+                    <strong
+                        style="color:var(--orange)"
+                    >
+                        28
+                    </strong>
+
+
+                    <span class="small">
+                        Prototype inventory
+                    </span>
+
+                </div>
+
+
+
+                <div class="mini">
+
+                    <small>
+                        HOSPITALS
+                    </small>
+
+
+                    <strong
+                        style="color:var(--purple)"
+                    >
+                        5
+                    </strong>
+
+
+                    <span class="small">
+                        Prototype inventory
+                    </span>
+
+                </div>
+
+
+
+                <div class="mini">
+
+                    <small>
+                        SHELTERS
+                    </small>
+
+
+                    <strong
+                        style="color:var(--green)"
+                    >
+                        42
+                    </strong>
+
+
+                    <span class="small">
+                        Prototype inventory
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <p class="small">
+
+                Asset counts shown here are demonstration
+                inventory. Official infrastructure inventories
+                must come from connected government or
+                authority datasets.
+
+            </p>
+
+        </section>
+
+
+
+        <!-- =================================================
+             SHELTERS
+        ================================================== -->
+
+        <section
+            id="shelters"
+            class="panel"
+        >
+
+            <h3>
+                🏠 Evacuation & Shelters
+            </h3>
+
+
+            <div class="mini">
+
+                <small>
+                    REFERENCE FACILITY
+                </small>
+
+
+                <strong>
+                    Nagapattinam Govt School
+                </strong>
+
+
+                <span class="small">
+                    Prototype reference facility
+                </span>
+
+            </div>
+
+
+            <div class="bar">
+
+                <i
+                    style="width:63%"
+                ></i>
+
+            </div>
+
+
+            <p class="small">
+
+                Shelter locations, capacity and availability
+                require verification from local disaster-management
+                authorities. ARAN AI does not invent evacuation
+                routes or official shelter orders.
+
+            </p>
+
+        </section>
+
+
+
+        <!-- =================================================
+             GEMINI ASSISTANT
+        ================================================== -->
+
+        <section
+            id="assistant"
+            class="panel"
+        >
+
+            <h3>
+                🤖 Grounded Gemini Assistant
+            </h3>
+
+
+            <p class="small">
+
+                Ask about cyclones, rainfall, floods,
+                storm surge, preparedness or disaster
+                information.
+
+            </p>
+
+
+            <div class="chat">
+
+                <input
+                    id="question"
+                    placeholder="What does storm surge mean?"
+                >
+
+
+                <button
+                    onclick="ask()"
+                >
+                    Ask
+                </button>
+
+            </div>
+
+
+            <div
+                id="answer"
+                class="small"
+                style="margin-top:12px"
+            >
+                ARAN AI is ready.
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             INSURANCE
+        ================================================== -->
+
+        <section
+            id="insurance"
+            class="panel"
+        >
+
+            <h3>
+                🛡 Parametric Risk
+            </h3>
+
+
+            <div class="mini">
+
+                <small>
+                    RAINFALL TRIGGER
+                </small>
+
+
+                <strong
+                    id="dashboardInsuranceRainfall"
+                >
+                    —
+                </strong>
+
+
+                <span
+                    class="small"
+                    id="dashboardInsuranceText"
+                >
+                    Checking live measurement
+                </span>
+
+            </div>
+
+
+            <div class="insurance-progress">
+
+                <i
+                    id="insuranceProgress"
+                ></i>
+
+            </div>
+
+
+            <p
+                class="small"
+                id="dashboardInsuranceStatus"
+            >
+                Connecting to live parametric-risk simulation...
+            </p>
+
+
+            <a
+                href="/insurance"
+                class="btn ghost"
+                style="
+                    display:block;
+                    margin-top:10px;
+                    width:100%;
+                    text-align:center;
+                    box-sizing:border-box;
+                "
+            >
+                Open Insurance Module
+            </a>
+
+        </section>
+
+
+
+        <!-- =================================================
+             REPORTS
+        ================================================== -->
+
+        <section
+            id="reports"
+            class="panel"
+        >
+
+            <h3>
+                📊 Reports
+            </h3>
+
+
+            <div class="mini">
+
+                <small>
+                    REPORT CENTER
+                </small>
+
+
+                <strong>
+                    Coastal Risk Brief
+                </strong>
+
+
+                <span class="small">
+                    Uses current alert and cyclone context
+                </span>
+
+            </div>
+
+
+            <a
+                href="/reports"
+                class="btn ghost"
+                style="
+                    display:block;
+                    margin-top:10px;
+                    width:100%;
+                    text-align:center;
+                    box-sizing:border-box;
+                "
+            >
+                Open Reports
+            </a>
+
+        </section>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <div class="footer">
+
+        ARAN AI • AI-Powered Coastal Disaster Resiliency
+        & Grounded Early-Warning Platform
+        • Build with AI: Code for Communities
+
+    </div>
+
+
+</main>
+
+
+
+<!-- =========================================================
+     LEAFLET JS
+========================================================= -->
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+></script>
+
+
+
+<!-- =========================================================
+     DASHBOARD JAVASCRIPT
+========================================================= -->
+
+<script>
+
+/* =========================================================
+   ARAN AI DASHBOARD — COMPLETE JAVASCRIPT
+   =========================================================
+   FIXES INCLUDED:
+   1. Coastal Tamil Nadu map focus
+   2. GEE rainfall OFF by default
+   3. 24H rainfall KPI uses /api/insurance
+   4. Current precipitation stays only in Weather panel
+   5. IMD live alerts
+   6. Cyclone status
+   7. Parametric-risk simulation
+   8. Gemini assistant
+   9. 60-second refresh
+========================================================= */
+
+
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
+
+let dashboardAlerts = [];
+
+let aranMap = null;
+
+let satelliteLayer = null;
+
+let streetLayer = null;
+
+let rainfallLayer = null;
+
+let mapAlertMarkers = [];
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================================
+   DASHBOARD CLOCK
+========================================================= */
+
+function updateDashboardTime() {
+
+    const element =
+        document.getElementById("dashboardTime");
+
+    if (!element) {
+        return;
+    }
+
+    const now = new Date();
+
+    element.textContent =
+        now.toLocaleString(
+            "en-IN",
+            {
+                dateStyle: "medium",
+                timeStyle: "short"
+            }
+        ) + " IST";
+
+}
+
+updateDashboardTime();
+
+setInterval(
+    updateDashboardTime,
+    60000
+);
+
+
+/* =========================================================
+   REAL LEAFLET MAP
+========================================================= */
+
+async function initializeAranMap() {
+
+    const container =
+        document.getElementById(
+            "aran-live-map"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    if (typeof L === "undefined") {
+
+        console.error(
+            "Leaflet was not loaded."
+        );
+
+        return;
+    }
+
+    if (aranMap) {
+        return;
+    }
+
+
+    /* =====================================================
+       CREATE MAP
+       Tamil Nadu coastal focus
+    ===================================================== */
+
+    aranMap =
+        L.map(
+            "aran-live-map",
+            {
+                center: [
+                    11.5,
+                    79.9
+                ],
+
+                zoom: 8,
+
+                zoomControl: true
+            }
+        );
+
+
+    /* =====================================================
+       STREET TILE
+    ===================================================== */
+
+    streetLayer =
+        L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                maxZoom: 19,
+
+                attribution:
+                    "&copy; OpenStreetMap contributors"
+            }
+        );
+
+
+    /* =====================================================
+       SATELLITE TILE
+    ===================================================== */
+
+    satelliteLayer =
+        L.tileLayer(
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+            {
+                maxZoom: 19,
+
+                attribution:
+                    "Esri World Imagery"
+            }
+        );
+
+
+    /* =====================================================
+       DEFAULT = SATELLITE
+    ===================================================== */
+
+    satelliteLayer.addTo(
+        aranMap
+    );
+
+
+    /* =====================================================
+       MONITORING LOCATIONS
+    ===================================================== */
+
+    addMonitoringLocations();
+
+
+    /* =====================================================
+       MAP BUTTONS
+    ===================================================== */
+
+    const satelliteButton =
+        document.getElementById(
+            "mapSatelliteBtn"
+        );
+
+    const streetButton =
+        document.getElementById(
+            "mapStreetBtn"
+        );
+
+    const rainfallButton =
+        document.getElementById(
+            "mapRainfallBtn"
+        );
+
+
+    /* =====================================================
+       SATELLITE BUTTON
+    ===================================================== */
+
+    if (satelliteButton) {
+
+        satelliteButton.onclick =
+            function() {
+
+                if (
+                    aranMap.hasLayer(
+                        streetLayer
+                    )
+                ) {
+
+                    aranMap.removeLayer(
+                        streetLayer
+                    );
+
+                }
+
+                if (
+                    !aranMap.hasLayer(
+                        satelliteLayer
+                    )
+                ) {
+
+                    satelliteLayer.addTo(
+                        aranMap
+                    );
+
+                }
+
+                satelliteButton.classList.add(
+                    "active"
+                );
+
+                if (streetButton) {
+
+                    streetButton.classList.remove(
+                        "active"
+                    );
+
+                }
+
+            };
+
+    }
+
+
+    /* =====================================================
+       STREET BUTTON
+    ===================================================== */
+
+    if (streetButton) {
+
+        streetButton.onclick =
+            function() {
+
+                if (
+                    aranMap.hasLayer(
+                        satelliteLayer
+                    )
+                ) {
+
+                    aranMap.removeLayer(
+                        satelliteLayer
+                    );
+
+                }
+
+                if (
+                    !aranMap.hasLayer(
+                        streetLayer
+                    )
+                ) {
+
+                    streetLayer.addTo(
+                        aranMap
+                    );
+
+                }
+
+                streetButton.classList.add(
+                    "active"
+                );
+
+                if (satelliteButton) {
+
+                    satelliteButton.classList.remove(
+                        "active"
+                    );
+
+                }
+
+            };
+
+    }
+
+
+    /* =====================================================
+       RAINFALL BUTTON
+
+       IMPORTANT:
+       Rainfall is NOT loaded automatically.
+       User must click the button.
+    ===================================================== */
+
+    if (rainfallButton) {
+
+        rainfallButton.onclick =
+            async function() {
+
+                await loadAranRainfallLayer();
+
+            };
+
+    }
+
+
+    /* =====================================================
+       IMPORTANT:
+       DO NOT AUTO-LOAD GEE RAINFALL.
+
+       GEE IMERG V07 is a 30-minute satellite dataset and
+       its current catalog availability may lag the current
+       date. Therefore it remains an optional map overlay.
+    ===================================================== */
+
+
+    /* =====================================================
+       LOAD IMD MAP ALERTS
+    ===================================================== */
+
+    await loadAranMapAlerts();
+
+
+    /* =====================================================
+       MAP RESIZE
+    ===================================================== */
+
+    setTimeout(
+        function() {
+
+            if (aranMap) {
+
+                aranMap.invalidateSize();
+
+            }
+
+        },
+        500
+    );
+
+}
+
+
+/* =========================================================
+   MONITORING LOCATIONS
+========================================================= */
+
+function addMonitoringLocations() {
+
+    if (!aranMap) {
+        return;
+    }
+
+    const locations = [
+
+        {
+            name: "Chennai",
+            lat: 13.0827,
+            lng: 80.2707
+        },
+
+        {
+            name: "Cuddalore",
+            lat: 11.7480,
+            lng: 79.7714
+        },
+
+        {
+            name: "Nagapattinam",
+            lat: 10.7672,
+            lng: 79.8449
+        }
+
+    ];
+
+
+    locations.forEach(
+        location => {
+
+            const marker =
+                L.circleMarker(
+                    [
+                        location.lat,
+                        location.lng
+                    ],
+                    {
+                        radius: 6,
+
+                        color: "#ffd166",
+
+                        weight: 2,
+
+                        fillColor: "#ffb703",
+
+                        fillOpacity: 0.9
+                    }
+                );
+
+
+            marker.bindPopup(`
+
+                <strong>
+                    ${escapeHtml(
+                        location.name
+                    )}
+                </strong>
+
+                <br><br>
+
+                ARAN AI coastal
+                monitoring location.
+
+                <br><br>
+
+                <small>
+
+                    Latitude:
+                    ${location.lat.toFixed(4)}
+
+                    <br>
+
+                    Longitude:
+                    ${location.lng.toFixed(4)}
+
+                </small>
+
+            `);
+
+
+            marker.addTo(
+                aranMap
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   GEE RAINFALL
+========================================================= */
+
+async function loadAranRainfallLayer() {
+
+    if (!aranMap) {
+        return;
+    }
+
+    const status =
+        document.getElementById(
+            "mapLiveStatus"
+        );
+
+
+    try {
+
+        if (status) {
+
+            status.textContent =
+                "● Loading GEE rainfall";
+
+        }
+
+
+        const response =
+            await fetch(
+                "/api/risk-map/rainfall?fresh=" +
+                Date.now(),
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Rainfall HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const tileUrl =
+            data.tile_url ||
+            data.tileUrl ||
+            data.url ||
+            data.map_url ||
+            data.mapUrl;
+
+
+        if (!tileUrl) {
+
+            console.warn(
+                "No GEE tile URL:",
+                data
+            );
+
+            if (status) {
+
+                status.textContent =
+                    "● Base map connected";
+
+            }
+
+            return;
+
+        }
+
+
+        if (rainfallLayer) {
+
+            aranMap.removeLayer(
+                rainfallLayer
+            );
+
+        }
+
+
+        rainfallLayer =
+            L.tileLayer(
+                tileUrl,
+                {
+                    opacity: 0.55,
+
+                    attribution:
+                        "NASA GPM IMERG / Google Earth Engine",
+
+                    maxZoom: 12
+                }
+            );
+
+
+        rainfallLayer.addTo(
+            aranMap
+        );
+
+
+        if (status) {
+
+            status.textContent =
+                "● GEE rainfall layer";
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "GEE rainfall error:",
+            error
+        );
+
+
+        if (status) {
+
+            status.textContent =
+                "● Base map connected";
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   IMD ALERT MAP MARKERS
+========================================================= */
+
+async function loadAranMapAlerts() {
+
+    if (!aranMap) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/alerts?fresh=" +
+                Date.now(),
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+            return;
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const alerts =
+            data.alerts || [];
+
+
+        /* Remove old markers */
+
+        mapAlertMarkers.forEach(
+            marker => {
+
+                aranMap.removeLayer(
+                    marker
+                );
+
+            }
+        );
+
+
+        mapAlertMarkers = [];
+
+
+        if (!alerts.length) {
+            return;
+        }
+
+
+        /*
+          IMPORTANT:
+
+          The alert feed can be
+          subdivision-level.
+
+          We therefore do NOT invent
+          an exact warning coordinate.
+
+          This marker is a regional
+          visualization reference.
+        */
+
+
+        const firstAlert =
+            alerts[0];
+
+
+        const marker =
+            L.circleMarker(
+                [
+                    11.7480,
+                    79.7714
+                ],
+                {
+                    radius: 11,
+
+                    color: "#ff4d67",
+
+                    weight: 3,
+
+                    fillColor: "#ff4d67",
+
+                    fillOpacity: 0.75
+                }
+            );
+
+
+        marker.bindPopup(`
+
+            <strong>
+                IMD Warning
+            </strong>
+
+            <br><br>
+
+            ${escapeHtml(
+                firstAlert.hazard ||
+                "Weather Warning"
+            )}
+
+            <br>
+
+            Severity:
+            ${escapeHtml(
+                firstAlert.severity ||
+                "MEDIUM"
+            )}
+
+            <br>
+
+            ${escapeHtml(
+                firstAlert.display_location ||
+                firstAlert.location ||
+                "Tamil Nadu & Puducherry"
+            )}
+
+            <br><br>
+
+            <small>
+
+                Source:
+                India Meteorological Department
+
+            </small>
+
+        `);
+
+
+        marker.addTo(
+            aranMap
+        );
+
+
+        mapAlertMarkers.push(
+            marker
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Map alert marker error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD IMD ALERTS
+========================================================= */
+
+async function loadDashboardAlerts() {
+
+    const feed =
+        document.getElementById(
+            "feed"
+        );
+
+    const feedStatus =
+        document.getElementById(
+            "feedStatus"
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/alerts?fresh=" +
+                Date.now(),
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        dashboardAlerts =
+            data.alerts || [];
+
+
+        renderAlerts(
+            dashboardAlerts
+        );
+
+
+        if (feedStatus) {
+
+            feedStatus.textContent =
+                "IMD Live Feed";
+
+            feedStatus.className =
+                "small live-status connected";
+
+        }
+
+
+        updateAlertKPIs(
+            dashboardAlerts
+        );
+
+
+        await loadAranMapAlerts();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Dashboard alert error:",
+            error
+        );
+
+
+        if (feed) {
+
+            feed.innerHTML = `
+
+                <div class="feed-empty">
+
+                    Official IMD alert feed is
+                    temporarily unavailable.
+
+                </div>
+
+            `;
+
+        }
+
+
+        if (feedStatus) {
+
+            feedStatus.textContent =
+                "Feed unavailable";
+
+            feedStatus.className =
+                "small live-status error";
+
+        }
+
+
+        const count =
+            document.getElementById(
+                "alertCount"
+            );
+
+
+        const level =
+            document.getElementById(
+                "alertLevel"
+            );
+
+
+        if (count) {
+
+            count.textContent =
+                "—";
+
+        }
+
+
+        if (level) {
+
+            level.textContent =
+                "UNAVAILABLE";
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER ALERTS
+========================================================= */
+
+function renderAlerts(
+    alerts
+) {
+
+    const feed =
+        document.getElementById(
+            "feed"
+        );
+
+
+    if (!feed) {
+        return;
+    }
+
+
+    if (!alerts.length) {
+
+        feed.innerHTML = `
+
+            <div class="feed-empty">
+
+                No current IMD warnings were returned.
+
+                <br><br>
+
+                <span class="small">
+
+                    This does not mean that no weather
+                    conditions exist; it means no warning
+                    record was returned by the connected
+                    feed.
+
+                </span>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    feed.innerHTML =
+        alerts
+            .slice(0, 5)
+            .map(
+                alert => {
+
+                    const severity =
+                        String(
+                            alert.severity ||
+                            "LOW"
+                        ).toLowerCase();
+
+
+                    const title =
+                        escapeHtml(
+                            alert.title ||
+                            "IMD Weather Alert"
+                        );
+
+
+                    const summary =
+                        escapeHtml(
+                            alert.summary ||
+                            "Official warning information."
+                        );
+
+
+                    const location =
+                        escapeHtml(
+                            alert.display_location ||
+                            alert.location ||
+                            "Tamil Nadu"
+                        );
+
+
+                    const date =
+                        escapeHtml(
+                            alert.timestamp ||
+                            ""
+                        );
+
+
+                    const source =
+                        escapeHtml(
+                            alert.source ||
+                            "India Meteorological Department"
+                        );
+
+
+                    const status =
+                        escapeHtml(
+                            alert.status ||
+                            ""
+                        );
+
+
+                    const hazard =
+                        escapeHtml(
+                            alert.hazard ||
+                            "Weather Warning"
+                        );
+
+
+                    const severityText =
+                        escapeHtml(
+                            alert.severity ||
+                            "LOW"
+                        );
+
+
+                    return `
+
+                        <div
+                            class="feed-item ${severity}"
+                        >
+
+                            <div class="feed-top">
+
+                                <span class="small">
+
+                                    ${hazard}
+
+                                    •
+
+                                    ${severityText}
+
+                                </span>
+
+
+                                <span class="small">
+
+                                    ${date}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="feed-title">
+
+                                ${title}
+
+                            </div>
+
+
+                            <div class="feed-summary">
+
+                                ${summary}
+
+                            </div>
+
+
+                            <div class="feed-meta">
+
+                                ${source}
+
+                                •
+
+                                ${location}
+
+                                •
+
+                                ${status}
+
+                                •
+
+                                ✓ Verified IMD feed
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+}
+
+
+/* =========================================================
+   ALERT KPI
+========================================================= */
+
+function updateAlertKPIs(
+    alerts
+) {
+
+    const count =
+        alerts.length;
+
+
+    const countElement =
+        document.getElementById(
+            "alertCount"
+        );
+
+
+    if (countElement) {
+
+        countElement.textContent =
+            String(count).padStart(
+                2,
+                "0"
+            );
+
+        countElement.classList.remove(
+            "live-value-loading"
+        );
+
+    }
+
+
+    const activeAlerts =
+        alerts.filter(
+            alert =>
+                String(
+                    alert.status ||
+                    ""
+                ).toUpperCase()
+                ===
+                "ACTIVE"
+        );
+
+
+    const highAlerts =
+        alerts.filter(
+            alert =>
+                String(
+                    alert.severity ||
+                    ""
+                ).toUpperCase()
+                ===
+                "HIGH"
+        );
+
+
+    const mediumAlerts =
+        alerts.filter(
+            alert =>
+                String(
+                    alert.severity ||
+                    ""
+                ).toUpperCase()
+                ===
+                "MEDIUM"
+        );
+
+
+    const level =
+        document.getElementById(
+            "alertLevel"
+        );
+
+
+    const description =
+        document.getElementById(
+            "alertDescription"
+        );
+
+
+    if (!level) {
+        return;
+    }
+
+
+    if (highAlerts.length > 0) {
+
+        level.textContent =
+            "HIGH";
+
+        level.className =
+            "red";
+
+
+        if (description) {
+
+            description.textContent =
+                "High-severity IMD warning detected";
+
+        }
+
+    }
+
+    else if (
+        activeAlerts.length > 0 ||
+        mediumAlerts.length > 0
+    ) {
+
+        level.textContent =
+            "MEDIUM";
+
+        level.className =
+            "orange";
+
+
+        if (description) {
+
+            description.textContent =
+                "Active or upcoming IMD warning";
+
+        }
+
+    }
+
+    else {
+
+        level.textContent =
+            "NORMAL";
+
+        level.className =
+            "cyan";
+
+
+        if (description) {
+
+            description.textContent =
+                "No high-severity warning returned";
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   CYCLONE
+========================================================= */
+
+async function loadDashboardCyclone() {
+
+    const status =
+        document.getElementById(
+            "cycloneStatus"
+        );
+
+
+    const description =
+        document.getElementById(
+            "cycloneDescription"
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/cyclone?fresh=" +
+                Date.now(),
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (status) {
+
+            status.classList.remove(
+                "live-value-loading"
+            );
+
+        }
+
+
+        if (
+            data.active_cyclone ||
+            data.active_disturbance
+        ) {
+
+            if (status) {
+
+                status.textContent =
+                    (
+                        data.system_type ||
+                        "ACTIVE SYSTEM"
+                    ).toUpperCase();
+
+                status.className =
+                    "red";
+
+            }
+
+
+            if (description) {
+
+                description.textContent =
+                    data.name
+                    ? data.name
+                    : (
+                        data.synoptic_situation ||
+                        "Official IMD weather system detected"
+                    );
+
+            }
+
+        }
+
+        else {
+
+            if (status) {
+
+                status.textContent =
+                    "NO ACTIVE SYSTEM";
+
+                status.className =
+                    "cyan";
+
+            }
+
+
+            if (description) {
+
+                description.textContent =
+                    "No current cyclone/disturbance reported by IMD";
+
+            }
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Cyclone API error:",
+            error
+        );
+
+
+        if (status) {
+
+            status.textContent =
+                "UNAVAILABLE";
+
+            status.className =
+                "orange";
+
+        }
+
+
+        if (description) {
+
+            description.textContent =
+                "Unable to retrieve IMD cyclone status";
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   WEATHER
+========================================================= */
+
+async function loadDashboardWeather() {
+
+    const latitude =
+        10.7672;
+
+    const longitude =
+        79.8449;
+
+
+    const url =
+        "https://api.open-meteo.com/v1/forecast" +
+        "?latitude=" +
+        latitude +
+        "&longitude=" +
+        longitude +
+        "&current=temperature_2m,relative_humidity_2m,precipitation,rain,wind_speed_10m,wind_direction_10m" +
+        "&timezone=Asia%2FKolkata";
+
+
+    try {
+
+        const response =
+            await fetch(
+                url,
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Weather HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const current =
+            data.current || {};
+
+
+        const temperature =
+            Number(
+                current.temperature_2m
+            );
+
+
+        const wind =
+            Number(
+                current.wind_speed_10m
+            );
+
+
+        const rain =
+            Number(
+                current.precipitation
+            );
+
+
+        const temperatureElement =
+            document.getElementById(
+                "weatherTemperature"
+            );
+
+
+        const windElement =
+            document.getElementById(
+                "weatherWind"
+            );
+
+
+        const rainElement =
+            document.getElementById(
+                "weatherRain"
+            );
+
+
+        if (
+            Number.isFinite(
+                temperature
+            )
+        ) {
+
+            temperatureElement.textContent =
+                temperature.toFixed(1) +
+                "°C";
+
+        }
+
+
+        if (
+            Number.isFinite(
+                wind
+            )
+        ) {
+
+            windElement.textContent =
+                wind.toFixed(1) +
+                " km/h";
+
+        }
+
+
+        if (
+            Number.isFinite(
+                rain
+            )
+        ) {
+
+            /*
+              IMPORTANT:
+
+              This is CURRENT precipitation.
+
+              It must NOT update the top
+              "24H RAINFALL" KPI.
+            */
+
+            rainElement.textContent =
+                rain.toFixed(1) +
+                " mm";
+
+        }
+
+
+        document.getElementById(
+            "temperatureDescription"
+        ).textContent =
+            "Nagapattinam • current";
+
+
+        document.getElementById(
+            "windDescription"
+        ).textContent =
+            "Current wind speed";
+
+
+        [
+            temperatureElement,
+            windElement,
+            rainElement
+        ].forEach(
+            element => {
+
+                if (element) {
+
+                    element.classList.remove(
+                        "weather-loading"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Weather error:",
+            error
+        );
+
+
+        const elements = [
+
+            "weatherTemperature",
+
+            "weatherWind",
+
+            "weatherRain"
+
+        ];
+
+
+        elements.forEach(
+            id => {
+
+                const element =
+                    document.getElementById(
+                        id
+                    );
+
+
+                if (element) {
+
+                    element.textContent =
+                        "N/A";
+
+                }
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   INSURANCE / 24H RAINFALL
+========================================================= */
+
+async function loadDashboardInsurance() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/insurance?fresh=" +
+                Date.now(),
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Insurance HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const rainfall =
+            Number(
+                data.rainfall_mm
+            );
+
+
+        const threshold =
+            Number(
+                data.threshold_mm
+            );
+
+
+        const rainfallElement =
+            document.getElementById(
+                "dashboardInsuranceRainfall"
+            );
+
+
+        const textElement =
+            document.getElementById(
+                "dashboardInsuranceText"
+            );
+
+
+        const statusElement =
+            document.getElementById(
+                "dashboardInsuranceStatus"
+            );
+
+
+        const kpiStatus =
+            document.getElementById(
+                "insuranceStatus"
+            );
+
+
+        const kpiDescription =
+            document.getElementById(
+                "insuranceDescription"
+            );
+
+
+        const progress =
+            document.getElementById(
+                "insuranceProgress"
+            );
+
+
+        /* =================================================
+           24-HOUR RAINFALL
+        ================================================= */
+
+        if (
+            Number.isFinite(
+                rainfall
+            )
+        ) {
+
+            rainfallElement.textContent =
+                rainfall.toFixed(1) +
+                " mm";
+
+
+            textElement.textContent =
+                "24-hour precipitation";
+
+
+            /* =================================================
+               TOP DASHBOARD KPI
+
+               THIS IS THE IMPORTANT FIX.
+
+               The top 24H rainfall card gets its value
+               from /api/insurance.
+
+               It does NOT use current precipitation.
+            ================================================= */
+
+            const rainfallKpi =
+                document.getElementById(
+                    "rainfallValue"
+                );
+
+
+            const rainfallDescription =
+                document.getElementById(
+                    "rainfallDescription"
+                );
+
+
+            if (rainfallKpi) {
+
+                rainfallKpi.textContent =
+                    rainfall.toFixed(1) +
+                    " mm";
+
+
+                rainfallKpi.classList.remove(
+                    "live-value-loading"
+                );
+
+            }
+
+
+            if (rainfallDescription) {
+
+                rainfallDescription.textContent =
+                    "24-hour precipitation";
+
+            }
+
+
+            /* =================================================
+               PARAMETRIC PROGRESS
+            ================================================= */
+
+            if (
+                Number.isFinite(
+                    threshold
+                ) &&
+                threshold > 0
+            ) {
+
+                const percentage =
+                    Math.min(
+                        100,
+                        Math.max(
+                            0,
+                            (
+                                rainfall /
+                                threshold
+                            ) * 100
+                        )
+                    );
+
+
+                if (progress) {
+
+                    progress.style.width =
+                        percentage + "%";
+
+                }
+
+            }
+
+        }
+
+        else {
+
+            rainfallElement.textContent =
+                "NO DATA";
+
+
+            textElement.textContent =
+                "Measurement unavailable";
+
+
+            if (progress) {
+
+                progress.style.width =
+                    "0%";
+
+            }
+
+
+            const rainfallKpi =
+                document.getElementById(
+                    "rainfallValue"
+                );
+
+
+            const rainfallDescription =
+                document.getElementById(
+                    "rainfallDescription"
+                );
+
+
+            if (rainfallKpi) {
+
+                rainfallKpi.textContent =
+                    "N/A";
+
+                rainfallKpi.classList.remove(
+                    "live-value-loading"
+                );
+
+            }
+
+
+            if (rainfallDescription) {
+
+                rainfallDescription.textContent =
+                    "24-hour measurement unavailable";
+
+            }
+
+        }
+
+
+        /* =================================================
+           PARAMETRIC STATUS
+        ================================================= */
+
+        const currentStatus =
+            String(
+                data.status ||
+                "UNKNOWN"
+            ).toUpperCase();
+
+
+        if (statusElement) {
+
+            statusElement.textContent =
+                "Status: " +
+                currentStatus +
+                " • Threshold: " +
+                (
+                    Number.isFinite(
+                        threshold
+                    )
+                    ?
+                    threshold.toFixed(0) +
+                    " mm"
+                    :
+                    "N/A"
+                );
+
+        }
+
+
+        if (kpiStatus) {
+
+            kpiStatus.classList.remove(
+                "live-value-loading"
+            );
+
+        }
+
+
+        if (
+            currentStatus.includes(
+                "ABOVE"
+            )
+            ||
+            currentStatus.includes(
+                "TRIGGER"
+            )
+        ) {
+
+            if (kpiStatus) {
+
+                kpiStatus.textContent =
+                    "TRIGGER";
+
+                kpiStatus.className =
+                    "red";
+
+            }
+
+
+            if (kpiDescription) {
+
+                kpiDescription.textContent =
+                    "Rainfall threshold exceeded";
+
+            }
+
+        }
+
+        else {
+
+            if (kpiStatus) {
+
+                kpiStatus.textContent =
+                    "BELOW";
+
+                kpiStatus.className =
+                    "purple";
+
+            }
+
+
+            if (kpiDescription) {
+
+                kpiDescription.textContent =
+                    "Rainfall below trigger threshold";
+
+            }
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Insurance error:",
+            error
+        );
+
+
+        const rainfallElement =
+            document.getElementById(
+                "dashboardInsuranceRainfall"
+            );
+
+
+        const textElement =
+            document.getElementById(
+                "dashboardInsuranceText"
+            );
+
+
+        const statusElement =
+            document.getElementById(
+                "dashboardInsuranceStatus"
+            );
+
+
+        const progress =
+            document.getElementById(
+                "insuranceProgress"
+            );
+
+
+        const kpiStatus =
+            document.getElementById(
+                "insuranceStatus"
+            );
+
+
+        const rainfallKpi =
+            document.getElementById(
+                "rainfallValue"
+            );
+
+
+        const rainfallDescription =
+            document.getElementById(
+                "rainfallDescription"
+            );
+
+
+        if (rainfallElement) {
+
+            rainfallElement.textContent =
+                "N/A";
+
+        }
+
+
+        if (rainfallKpi) {
+
+            rainfallKpi.textContent =
+                "N/A";
+
+            rainfallKpi.classList.remove(
+                "live-value-loading"
+            );
+
+        }
+
+
+        if (rainfallDescription) {
+
+            rainfallDescription.textContent =
+                "24-hour measurement unavailable";
+
+        }
+
+
+        if (textElement) {
+
+            textElement.textContent =
+                "Live data unavailable";
+
+        }
+
+
+        if (statusElement) {
+
+            statusElement.textContent =
+                "Insurance data connection unavailable";
+
+        }
+
+
+        if (progress) {
+
+            progress.style.width =
+                "0%";
+
+        }
+
+
+        if (kpiStatus) {
+
+            kpiStatus.textContent =
+                "UNAVAILABLE";
+
+            kpiStatus.className =
+                "orange";
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   GEMINI ASSISTANT
+========================================================= */
+
+async function ask() {
+
+    const questionInput =
+        document.getElementById(
+            "question"
+        );
+
+
+    const answer =
+        document.getElementById(
+            "answer"
+        );
+
+
+    if (
+        !questionInput ||
+        !answer
+    ) {
+
+        return;
+
+    }
+
+
+    const question =
+        questionInput.value.trim();
+
+
+    if (!question) {
+
+        answer.textContent =
+            "Please enter a question.";
+
+        return;
+
+    }
+
+
+    answer.textContent =
+        "ARAN AI is thinking...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/ask",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(
+                            {
+                                question:
+                                    question
+                            }
+                        )
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Assistant HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        answer.textContent =
+            data.answer ||
+            "ARAN AI returned no answer.";
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Assistant error:",
+            error
+        );
+
+
+        answer.textContent =
+            "ARAN AI could not connect.";
+
+    }
+
+}
+
+
+/* =========================================================
+   ENTER KEY — ASSISTANT
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        const question =
+            document.getElementById(
+                "question"
+            );
+
+
+        if (!question) {
+            return;
+        }
+
+
+        question.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key ===
+                    "Enter"
+                ) {
+
+                    event.preventDefault();
+
+                    ask();
+
+                }
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        const search =
+            document.getElementById(
+                "dashboardSearch"
+            );
+
+
+        if (!search) {
+            return;
+        }
+
+
+        search.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key !==
+                    "Enter"
+                ) {
+
+                    return;
+
+                }
+
+
+                const value =
+                    this.value
+                        .trim()
+                        .toLowerCase();
+
+
+                if (!value) {
+                    return;
+                }
+
+
+                if (
+                    value.includes(
+                        "insurance"
+                    )
+                ) {
+
+                    window.location.href =
+                        "/insurance";
+
+                }
+
+
+                else if (
+                    value.includes(
+                        "risk"
+                    )
+                    ||
+                    value.includes(
+                        "map"
+                    )
+                ) {
+
+                    window.location.href =
+                        "/risk-map";
+
+                }
+
+
+                else if (
+                    value.includes(
+                        "alert"
+                    )
+                ) {
+
+                    window.location.href =
+                        "/live-alerts";
+
+                }
+
+
+                else if (
+                    value.includes(
+                        "weather"
+                    )
+                    ||
+                    value.includes(
+                        "rain"
+                    )
+                ) {
+
+                    window.location.href =
+                        "/weather";
+
+                }
+
+
+                else if (
+                    value.includes(
+                        "shelter"
+                    )
+                ) {
+
+                    window.location.href =
+                        "/shelters";
+
+                }
+
+
+                else {
+
+                    const question =
+                        document.getElementById(
+                            "question"
+                        );
+
+
+                    if (question) {
+
+                        question.value =
+                            this.value;
+
+                    }
+
+
+                    const assistant =
+                        document.getElementById(
+                            "assistant"
+                        );
+
+
+                    if (assistant) {
+
+                        assistant.scrollIntoView(
+                            {
+                                behavior:
+                                    "smooth"
+                            }
+                        );
+
+                    }
+
+
+                    ask();
+
+                }
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================================================
+   INITIAL DASHBOARD LOAD
+========================================================= */
+
+async function loadDashboard() {
+
+    /*
+      Initialize map separately.
+      It does not block other APIs.
+    */
+
+    initializeAranMap();
+
+
+    await Promise.allSettled(
+        [
+
+            loadDashboardAlerts(),
+
+            loadDashboardCyclone(),
+
+            loadDashboardWeather(),
+
+            loadDashboardInsurance()
+
+        ]
+    );
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        loadDashboard();
+
+    }
+);
+
+
+/* =========================================================
+   AUTO REFRESH — 60 SECONDS
+========================================================= */
+
+setInterval(
+    loadDashboardAlerts,
+    60000
+);
+
+
+setInterval(
+    loadDashboardCyclone,
+    60000
+);
+
+
+setInterval(
+    loadDashboardWeather,
+    60000
+);
+
+
+setInterval(
+    loadDashboardInsurance,
+    60000
+);
+
+</script>
+
+<script src="{{ url_for('static', filename='js/aran-i18n.js') }}"></script>
+</body>
+
+</html>

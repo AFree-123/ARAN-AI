@@ -1,0 +1,953 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>ARAN AI — Reports</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <style>
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-top: 14px;
+        }
+
+        .report-card {
+            background: #071d2d;
+            border: 1px solid rgba(0,200,255,.20);
+            border-radius: 14px;
+            padding: 22px;
+            min-height: 190px;
+        }
+
+        .report-card h2 {
+            margin-top: 0;
+        }
+
+        .report-card p {
+            color: #8db4cc;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .report-output {
+            margin-top: 14px;
+            display: none;
+            background: #061724;
+            border: 1px solid rgba(0,200,255,.18);
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .report-output.show {
+            display: block;
+        }
+
+        .report-output h3 {
+            margin-top: 0;
+            color: #fff;
+        }
+
+        .report-line {
+            margin: 9px 0;
+            color: #9bc2d6;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .report-line strong {
+            color: #fff;
+        }
+
+        .report-source {
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,.07);
+            color: #55d7ff;
+            font-size: 10px;
+        }
+
+        .verified {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 3px 7px;
+            border-radius: 10px;
+            color: #42e69a;
+            background: rgba(66,230,154,.08);
+            border: 1px solid rgba(66,230,154,.22);
+            font-size: 9px;
+        }
+
+        .severity-high {
+            color: #ff5b70 !important;
+        }
+
+        .severity-medium {
+            color: #ffb23f !important;
+        }
+
+        .severity-low {
+            color: #42e69a !important;
+        }
+
+        .status-box {
+            margin-top: 14px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            background: rgba(255,255,255,.025);
+            border-left: 3px solid #28b8ff;
+            color: #8db4cc;
+            font-size: 11px;
+        }
+
+        .report-meta {
+            margin-top: 15px;
+            color: #668fa5;
+            font-size: 10px;
+        }
+
+        .loading {
+            color: #55d7ff;
+        }
+
+        .error {
+            color: #ff7180;
+        }
+
+        @media (max-width: 1000px) {
+
+            .report-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+     ===================================================== -->
+
+<aside class="sidebar">
+
+    <div class="side-logo">
+
+        <a href="/dashboard">
+
+            <img src="/static/images/aran-logo.svg">
+
+        </a>
+
+    </div>
+
+
+    <nav class="nav">
+
+        <a href="/dashboard">⌂ Dashboard</a>
+
+        <a href="/live-alerts">🔔 Live Alerts</a>
+
+        <a href="/risk-map">▧ Risk Map</a>
+
+        <a href="/infrastructure">▦ Infrastructure</a>
+
+        <a href="/shelters">♧ Evacuation & Shelters</a>
+
+        <a href="/weather">☁ Weather & Forecast</a>
+
+        <a href="/news">▤ News Intelligence</a>
+
+        <a href="/assistant">🤖 AI Assistant</a>
+
+        <a href="/insurance">◇ Insurance (Demo)</a>
+
+        <a href="/reports">▣ Reports</a>
+
+        <a href="/settings">⚙ Settings</a>
+
+    </nav>
+
+
+    <div class="side-bottom">
+
+        <div class="online">
+
+            <i></i>
+
+            Systems operational
+
+        </div>
+
+        ARAN AI v1.0 • Hackathon Prototype
+
+    </div>
+
+</aside>
+
+
+
+<!-- =====================================================
+     MAIN
+     ===================================================== -->
+
+<main class="page-shell">
+
+
+    <header class="page-top">
+
+        <div class="page-title">
+
+            <div class="tag">
+                DECISION SUPPORT
+            </div>
+
+            <h1>
+                Reports
+            </h1>
+
+            <p>
+                Generate concise, source-grounded risk summaries
+                from the connected disaster information feeds.
+            </p>
+
+        </div>
+
+
+        <div class="page-actions">
+
+            <button class="module-btn">
+                EN / தமிழ்
+            </button>
+
+            <a href="/dashboard">
+
+                <button class="module-btn">
+                    ← Dashboard
+                </button>
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =================================================
+         REPORT CARDS
+         ================================================= -->
+
+    <div class="report-grid">
+
+
+        <!-- COASTAL RISK -->
+
+        <section class="report-card">
+
+            <h2>
+                Coastal Risk Brief
+            </h2>
+
+            <p>
+                Current cyclone, rainfall and official hazard
+                context from connected disaster feeds.
+            </p>
+
+            <button
+                class="module-btn"
+                onclick="generateCoastalReport()"
+            >
+                Generate
+            </button>
+
+            <div
+                id="coastalOutput"
+                class="report-output"
+            ></div>
+
+        </section>
+
+
+
+        <!-- INFRASTRUCTURE -->
+
+        <section class="report-card">
+
+            <h2>
+                Infrastructure Brief
+            </h2>
+
+            <p>
+                Current hazard context alongside the
+                demonstration infrastructure inventory.
+            </p>
+
+            <button
+                class="module-btn"
+                onclick="generateInfrastructureReport()"
+            >
+                Generate
+            </button>
+
+            <div
+                id="infrastructureOutput"
+                class="report-output"
+            ></div>
+
+        </section>
+
+
+
+        <!-- ALERT -->
+
+        <section class="report-card">
+
+            <h2>
+                Alert Summary
+            </h2>
+
+            <p>
+                Latest verified alerts with source,
+                location, severity and update information.
+            </p>
+
+            <button
+                class="module-btn"
+                onclick="generateAlertReport()"
+            >
+                Generate
+            </button>
+
+            <div
+                id="alertOutput"
+                class="report-output"
+            ></div>
+
+        </section>
+
+    </div>
+
+
+</main>
+
+
+
+<script>
+
+
+/* =========================================================
+   COMMON HELPERS
+   ========================================================= */
+
+async function getAlerts() {
+
+    const response =
+        await fetch(
+            "/api/alerts",
+            {
+                cache: "no-store"
+            }
+        );
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Alert API unavailable"
+        );
+
+    }
+
+    return await response.json();
+
+}
+
+
+async function getCyclone() {
+
+    const response =
+        await fetch(
+            "/api/cyclone",
+            {
+                cache: "no-store"
+            }
+        );
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Cyclone API unavailable"
+        );
+
+    }
+
+    return await response.json();
+
+}
+
+
+function nowText() {
+
+    return new Date().toLocaleString(
+        "en-IN"
+    );
+
+}
+
+
+function escapeHtml(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+function severityClass(value) {
+
+    const v =
+        String(value || "")
+            .toUpperCase();
+
+    if (v === "HIGH") {
+
+        return "severity-high";
+
+    }
+
+    if (v === "MEDIUM") {
+
+        return "severity-medium";
+
+    }
+
+    return "severity-low";
+
+}
+
+
+/* =========================================================
+   COASTAL RISK REPORT
+   ========================================================= */
+
+async function generateCoastalReport() {
+
+    const output =
+        document.getElementById(
+            "coastalOutput"
+        );
+
+    output.classList.add("show");
+
+    output.innerHTML =
+        '<div class="loading">' +
+        'Retrieving live disaster information...' +
+        '</div>';
+
+
+    try {
+
+        const [
+            alertData,
+            cycloneData
+        ] = await Promise.all([
+            getAlerts(),
+            getCyclone()
+        ]);
+
+
+        const alerts =
+            Array.isArray(alertData.alerts)
+                ? alertData.alerts
+                : [];
+
+
+        const active =
+            cycloneData.active_disturbance ||
+            cycloneData.active_cyclone;
+
+
+        let cycloneText;
+
+
+        if (active) {
+
+            cycloneText =
+                (cycloneData.system_type || "Active system") +
+                (
+                    cycloneData.name
+                        ? " — " + cycloneData.name
+                        : ""
+                );
+
+        }
+
+        else {
+
+            cycloneText =
+                "No active synoptic disturbance reported by the connected IMD cyclone feed.";
+
+        }
+
+
+        const highCount =
+            alerts.filter(
+                a =>
+                    String(
+                        a.severity || ""
+                    ).toUpperCase() === "HIGH"
+            ).length;
+
+
+        const mediumCount =
+            alerts.filter(
+                a =>
+                    String(
+                        a.severity || ""
+                    ).toUpperCase() === "MEDIUM"
+            ).length;
+
+
+        output.innerHTML = `
+
+            <h3>
+                Coastal Risk Brief
+            </h3>
+
+            <div class="report-line">
+
+                <strong>Cyclone / disturbance:</strong>
+
+                ${escapeHtml(cycloneText)}
+
+            </div>
+
+
+            <div class="report-line">
+
+                <strong>Connected official alerts:</strong>
+
+                ${alerts.length}
+
+            </div>
+
+
+            <div class="report-line">
+
+                <strong>High severity:</strong>
+
+                <span class="${severityClass("HIGH")}">
+                    ${highCount}
+                </span>
+
+            </div>
+
+
+            <div class="report-line">
+
+                <strong>Medium severity:</strong>
+
+                <span class="${severityClass("MEDIUM")}">
+                    ${mediumCount}
+                </span>
+
+            </div>
+
+
+            <div class="status-box">
+
+                ARAN AI uses the connected official feed
+                for current hazard context. This report does
+                not independently declare an evacuation order
+                or predict a disaster event.
+
+            </div>
+
+
+            <div class="report-source">
+
+                Source:
+                ${escapeHtml(
+                    alertData.source ||
+                    "India Meteorological Department"
+                )}
+
+                <span class="verified">
+                    ✓ CONNECTED
+                </span>
+
+                <br><br>
+
+                Generated:
+                ${nowText()}
+
+            </div>
+
+        `;
+
+    }
+
+    catch (error) {
+
+        output.innerHTML =
+            '<div class="error">' +
+            'Unable to generate the coastal report from the connected live feeds.' +
+            '</div>';
+
+    }
+
+}
+
+
+
+/* =========================================================
+   INFRASTRUCTURE REPORT
+   ========================================================= */
+
+async function generateInfrastructureReport() {
+
+    const output =
+        document.getElementById(
+            "infrastructureOutput"
+        );
+
+    output.classList.add("show");
+
+    output.innerHTML =
+        '<div class="loading">' +
+        'Retrieving current hazard context...' +
+        '</div>';
+
+
+    try {
+
+        const data =
+            await getAlerts();
+
+
+        const alerts =
+            Array.isArray(data.alerts)
+                ? data.alerts
+                : [];
+
+
+        let context =
+            "No active official hazard alert detected.";
+
+
+        if (alerts.length > 0) {
+
+            const first =
+                alerts[0];
+
+
+            context =
+                (
+                    first.title ||
+                    first.hazard ||
+                    "Official hazard information"
+                ) +
+                " — " +
+                (
+                    first.summary ||
+                    "Official information available."
+                );
+
+        }
+
+
+        output.innerHTML = `
+
+            <h3>
+                Infrastructure Brief
+            </h3>
+
+
+            <div class="report-line">
+
+                <strong>Current hazard context:</strong>
+
+                ${escapeHtml(context)}
+
+            </div>
+
+
+            <div class="report-line">
+
+                <strong>Infrastructure status:</strong>
+
+                Monitoring required according to
+                current hazard context.
+
+            </div>
+
+
+            <div class="report-line">
+
+                <strong>Priority assets:</strong>
+
+                Power, roads, medical facilities and
+                emergency shelters.
+
+            </div>
+
+
+            <div class="status-box">
+
+                The infrastructure inventory shown in ARAN AI
+                is a demonstration inventory unless connected
+                to an authoritative infrastructure registry.
+                It must not be interpreted as an official
+                infrastructure count.
+
+            </div>
+
+
+            <div class="report-source">
+
+                Hazard source:
+                ${escapeHtml(
+                    data.source ||
+                    "Official disaster feed"
+                )}
+
+                <span class="verified">
+                    ✓ CONNECTED
+                </span>
+
+                <br><br>
+
+                Generated:
+                ${nowText()}
+
+            </div>
+
+        `;
+
+    }
+
+    catch (error) {
+
+        output.innerHTML =
+            '<div class="error">' +
+            'Unable to retrieve current hazard context.' +
+            '</div>';
+
+    }
+
+}
+
+
+
+/* =========================================================
+   ALERT SUMMARY
+   ========================================================= */
+
+async function generateAlertReport() {
+
+    const output =
+        document.getElementById(
+            "alertOutput"
+        );
+
+    output.classList.add("show");
+
+    output.innerHTML =
+        '<div class="loading">' +
+        'Retrieving latest official alerts...' +
+        '</div>';
+
+
+    try {
+
+        const data =
+            await getAlerts();
+
+
+        const alerts =
+            Array.isArray(data.alerts)
+                ? data.alerts
+                : [];
+
+
+        if (alerts.length === 0) {
+
+            output.innerHTML = `
+
+                <h3>
+                    Alert Summary
+                </h3>
+
+                <div class="report-line">
+
+                    <strong>Status:</strong>
+
+                    <span class="severity-low">
+                        No active official alert detected
+                    </span>
+
+                </div>
+
+
+                <div class="status-box">
+
+                    No relevant official alert is currently
+                    available in the connected feed.
+
+                </div>
+
+
+                <div class="report-source">
+
+                    Source:
+                    ${escapeHtml(
+                        data.source ||
+                        "Official disaster feed"
+                    )}
+
+                    <span class="verified">
+                        ✓ CONNECTED
+                    </span>
+
+                    <br><br>
+
+                    Generated:
+                    ${nowText()}
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        const items =
+            alerts
+                .slice(0, 8)
+                .map(alert => {
+
+                    const severity =
+                        String(
+                            alert.severity || "LOW"
+                        ).toUpperCase();
+
+
+                    return `
+
+                        <div class="report-line">
+
+                            <strong>
+                                ${escapeHtml(
+                                    alert.title ||
+                                    alert.hazard ||
+                                    "Official alert"
+                                )}
+                            </strong>
+
+                            <span
+                                class="${severityClass(severity)}"
+                            >
+                                ${escapeHtml(severity)}
+                            </span>
+
+                            <br>
+
+                            ${escapeHtml(
+                                alert.summary ||
+                                "Official information available."
+                            )}
+
+                            <br>
+
+                            📍
+                            ${escapeHtml(
+                                alert.location ||
+                                "Location not specified"
+                            )}
+
+                            ${
+                                alert.date ||
+                                alert.issue_time
+                                    ? "<br>🕒 " +
+                                      escapeHtml(
+                                          alert.date ||
+                                          alert.issue_time
+                                      )
+                                    : ""
+                            }
+
+                        </div>
+
+                    `;
+
+                })
+                .join("");
+
+
+        output.innerHTML = `
+
+            <h3>
+                Alert Summary
+            </h3>
+
+            ${items}
+
+
+            <div class="report-source">
+
+                Source:
+                ${escapeHtml(
+                    data.source ||
+                    "India Meteorological Department"
+                )}
+
+                <span class="verified">
+                    ✓ VERIFIED FEED
+                </span>
+
+                <br><br>
+
+                Generated:
+                ${nowText()}
+
+            </div>
+
+        `;
+
+    }
+
+    catch (error) {
+
+        output.innerHTML =
+            '<div class="error">' +
+            'Unable to retrieve the official alert feed.' +
+            '</div>';
+
+    }
+
+}
+
+</script>
+
+
+</body>
+
+</html>

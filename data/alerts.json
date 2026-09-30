@@ -1,0 +1,49 @@
+{
+  "last_updated": "Demo feed",
+  "alerts": [
+    {
+      "severity": "HIGH",
+      "category": "RAINFALL",
+      "title": "Heavy Rainfall Warning",
+      "location": "Nagapattinam",
+      "time": "10:42 AM",
+      "source": "IMD",
+      "text": "Heavy rainfall information is being monitored for coastal districts.",
+      "simple": "கடலோர பகுதிகளில் கனமழை நிலவரம் தொடர்ந்து கண்காணிக்கப்படுகிறது.",
+      "verified": true
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "INFRASTRUCTURE",
+      "title": "Potential Coastal Road Disruption",
+      "location": "Chennai Coast",
+      "time": "10:28 AM",
+      "source": "Infrastructure feed",
+      "text": "Heavy rain and high waves may affect vulnerable coastal road segments.",
+      "simple": "கனமழை மற்றும் அதிக அலைகள் சில கடலோர சாலைகளை பாதிக்கலாம்.",
+      "verified": true
+    },
+    {
+      "severity": "INFO",
+      "category": "GOVERNMENT",
+      "title": "Preparedness Update",
+      "location": "Tamil Nadu",
+      "time": "10:15 AM",
+      "source": "Disaster-management feed",
+      "text": "Preparedness information is being consolidated for vulnerable districts.",
+      "simple": "பாதிக்கப்படக்கூடிய மாவட்டங்களுக்கான முன்னெச்சரிக்கை தகவல்கள் ஒருங்கிணைக்கப்படுகின்றன.",
+      "verified": true
+    },
+    {
+      "severity": "HIGH",
+      "category": "CYCLONE",
+      "title": "Cyclone Track Monitoring",
+      "location": "Bay of Bengal",
+      "time": "09:55 AM",
+      "source": "IMD",
+      "text": "Cyclone movement is being monitored using official weather updates.",
+      "simple": "வங்கக்கடலில் புயலின் நகர்வு அதிகாரப்பூர்வ தகவல்களின் அடிப்படையில் கண்காணிக்கப்படுகிறது.",
+      "verified": true
+    }
+  ]
+}

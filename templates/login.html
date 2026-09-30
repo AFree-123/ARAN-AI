@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>ARAN AI — Secure Access</title>
+
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/style.css') }}"
+  >
+</head>
+
+<body class="login-page">
+
+<main class="login-screen">
+
+  <!-- =========================
+       LEFT SIDE — ARAN AI
+       ========================= -->
+  <section class="login-hero">
+
+    <div class="hero-brand">
+      <img
+        src="{{ url_for('static', filename='images/aran-logo.svg') }}"
+        alt="ARAN AI"
+      >
+    </div>
+
+    <div class="tag">
+      FROM INFORMATION → INTELLIGENCE → ACTION
+    </div>
+
+    <h1>
+      Safer Coasts.<br>
+      <span>Stronger Communities.</span>
+    </h1>
+
+    <p>
+      AI-powered early warnings, geospatial risk intelligence
+      and ready-to-act insights for coastal disaster resilience.
+    </p>
+
+    <div class="login-features">
+
+      <div class="login-feature">
+        <b>◉</b>
+        <div>
+          <strong>Live Monitoring</strong>
+          <span>
+            Cyclone, rainfall &amp; storm-surge intelligence
+          </span>
+        </div>
+      </div>
+
+      <div class="login-feature">
+        <b>⌖</b>
+        <div>
+          <strong>Satellite Intelligence</strong>
+          <span>
+            Google Earth Engine risk layers
+          </span>
+        </div>
+      </div>
+
+      <div class="login-feature">
+        <b>!</b>
+        <div>
+          <strong>Grounded AI</strong>
+          <span>
+            Source-based simple explanations
+          </span>
+        </div>
+      </div>
+
+      <div class="login-feature">
+        <b>♧</b>
+        <div>
+          <strong>People &amp; Assets</strong>
+          <span>
+            Infrastructure and shelter exposure
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       RIGHT SIDE — LOGIN
+       ========================= -->
+  <section class="login-card">
+
+    <div class="card-brand">
+      <img
+        src="{{ url_for('static', filename='images/aran-logo.svg') }}"
+        alt="ARAN AI"
+      >
+    </div>
+
+    <div class="login-heading">
+
+      <span class="eyebrow">
+        SECURE ACCESS
+      </span>
+
+      <h2>
+        Welcome back
+      </h2>
+
+      <p>
+        Access live alerts, risk maps and AI-powered
+        disaster intelligence.
+      </p>
+
+    </div>
+
+
+    <!-- LOGIN TABS -->
+
+    <div class="tabs">
+
+      <button
+        class="active"
+        type="button"
+      >
+        Authority Login
+      </button>
+
+      <button
+        type="button"
+      >
+        Public Access
+      </button>
+
+    </div>
+
+
+    <!-- =========================
+         FIREBASE EMAIL LOGIN
+         ========================= -->
+
+    <form
+      id="loginForm"
+      onsubmit="event.preventDefault(); firebaseLogin();"
+    >
+
+      <div class="field">
+
+        <label for="email">
+          EMAIL ID
+        </label>
+
+        <input
+          id="email"
+          type="email"
+          placeholder="officer@example.gov.in"
+          autocomplete="email"
+          required
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="password">
+          PASSWORD
+        </label>
+
+        <input
+          id="password"
+          type="password"
+          placeholder="Enter password"
+          autocomplete="current-password"
+          required
+        >
+
+      </div>
+
+
+      <div class="login-options">
+
+        <label>
+          <input
+            type="checkbox"
+            id="rememberMe"
+          >
+          Remember me
+        </label>
+
+        <a href="#">
+          Forgot password?
+        </a>
+
+      </div>
+
+
+      <button
+        class="btn primary"
+        type="submit"
+      >
+        Login
+        <span>→</span>
+      </button>
+
+    </form>
+
+
+    <!-- =========================
+         GOOGLE LOGIN
+         ========================= -->
+
+    <div class="or">
+      <span>OR</span>
+    </div>
+
+
+    <button
+      class="btn ghost"
+      type="button"
+      onclick="firebaseGoogleLogin()"
+    >
+      Continue with Google
+      <span>→</span>
+    </button>
+
+
+    <!-- =========================
+         SECURITY MESSAGE
+         ========================= -->
+
+    <div class="secure">
+
+      <b>
+        🛡 Secure access
+      </b>
+
+      <span>
+        Authorized users only · Hackathon prototype
+      </span>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<!-- =========================
+     FIREBASE AUTHENTICATION
+     ========================= -->
+
+<script
+  type="module"
+  src="{{ url_for('static', filename='js/firebase-auth.js') }}"
+></script>
+
+</body>
+</html>

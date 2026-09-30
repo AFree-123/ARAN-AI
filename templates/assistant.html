@@ -1,0 +1,991 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ARAN AI — AI Assistant</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <style>
+        /* ================================
+           FIXED FULL PAGE
+        ================================= */
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .page-shell {
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .chat-page {
+            height: calc(100vh - 125px);
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        /* ================================
+           CHAT
+        ================================= */
+
+        .chat-window {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 18px 20px;
+            scroll-behavior: smooth;
+        }
+
+        /* ================================
+           WELCOME
+        ================================= */
+
+        .welcome-message {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 4px 0 18px 4px;
+            color: #e8f4ff;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .welcome-logo {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        /* ================================
+           MESSAGES
+        ================================= */
+
+        .chat-message {
+            margin-bottom: 14px;
+            padding: 14px 17px;
+            border-radius: 14px;
+            max-width: 82%;
+            line-height: 1.55;
+            white-space: pre-wrap;
+        }
+
+        .chat-message.user {
+            margin-left: auto;
+            background: #1677ff;
+            color: white;
+        }
+
+        .chat-message.ai {
+            margin-right: auto;
+            background: #0d2a40;
+            color: #e8f4ff;
+        }
+
+        /* ================================
+           INPUT
+        ================================= */
+
+        .chat-input {
+            display: flex;
+            gap: 9px;
+            padding: 14px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            background: #061b2c;
+            flex-shrink: 0;
+        }
+
+        .chat-input input {
+            flex: 1;
+            min-width: 0;
+            padding: 13px 15px;
+            border-radius: 10px;
+            border: 1px solid #214966;
+            background: #061624;
+            color: white;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .chat-input input:focus {
+            border-color: #168cff;
+        }
+
+        /* ================================
+           MIC
+        ================================= */
+
+        #micButton {
+            width: 50px;
+            min-width: 50px;
+            padding: 0;
+            border: none;
+            border-radius: 10px;
+            background: #123c57;
+            color: white;
+            font-size: 19px;
+            cursor: pointer;
+        }
+
+        #micButton:hover {
+            background: #18577c;
+        }
+
+        #micButton.listening {
+            background: #d93636;
+            animation: micPulse 1s infinite;
+        }
+
+        #micButton:disabled {
+            cursor: not-allowed;
+        }
+
+        @keyframes micPulse {
+            50% {
+                opacity: 0.55;
+            }
+        }
+
+        /* ================================
+           LANGUAGE BUTTON
+        ================================= */
+
+        #languageButton {
+            width: 55px;
+            padding: 0;
+            border: 1px solid #315a73;
+            border-radius: 9px;
+            background: #092338;
+            color: #dcefff;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        #languageButton:hover {
+            background: #123c57;
+        }
+
+        /* ================================
+           SEND
+        ================================= */
+
+        #askButton {
+            padding: 0 20px;
+            border: none;
+            border-radius: 10px;
+            background: #1677ff;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        #askButton:hover {
+            background: #0d6bea;
+        }
+
+        #askButton:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* ================================
+           THINKING
+        ================================= */
+
+        .typing {
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        /* ================================
+           LISTEN
+        ================================= */
+
+        .speak-button {
+            margin-top: 8px;
+            padding: 6px 11px;
+            border: 1px solid #315a73;
+            border-radius: 8px;
+            background: #092338;
+            color: #dcefff;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .speak-button:hover {
+            background: #123c57;
+        }
+    </style>
+</head>
+
+
+<body>
+
+<!-- ================================
+     SIDEBAR
+================================= -->
+
+<aside class="sidebar">
+
+    <div class="side-logo">
+        <a href="/dashboard">
+            <img src="/static/images/aran-logo.svg">
+        </a>
+    </div>
+
+    <nav class="nav">
+
+        <a href="/dashboard">⌂ Dashboard</a>
+
+        <a href="/live-alerts">🔔 Live Alerts</a>
+
+        <a href="/risk-map">▧ Risk Map</a>
+
+        <a href="/infrastructure">▦ Infrastructure</a>
+
+        <a href="/shelters">♧ Evacuation & Shelters</a>
+
+        <a href="/weather">☁ Weather & Forecast</a>
+
+        <a href="/news">▤ News Intelligence</a>
+
+        <a href="/assistant">🤖 AI Assistant</a>
+
+        <a href="/insurance">◇ Insurance (Demo)</a>
+
+        <a href="/reports">▣ Reports</a>
+
+        <a href="/settings">⚙ Settings</a>
+
+    </nav>
+
+    <div class="side-bottom">
+
+        <div class="online">
+            <i></i> Systems operational
+        </div>
+
+        ARAN AI v1.0 • Hackathon Prototype
+
+    </div>
+
+</aside>
+
+
+<!-- ================================
+     MAIN
+================================= -->
+
+<main class="page-shell">
+
+    <header class="page-top">
+
+        <div class="page-title">
+
+            <div class="tag">
+                GROUNDED GEMINI
+            </div>
+
+            <h1>
+                AI Assistant
+            </h1>
+
+            <p>
+                Ask questions and receive grounded explanations.
+                The assistant does not create official warnings.
+            </p>
+
+        </div>
+
+        <div class="page-actions">
+
+            <button class="module-btn">
+                EN / தமிழ்
+            </button>
+
+            <a href="/dashboard">
+                <button class="module-btn">
+                    ← Dashboard
+                </button>
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================================
+         CHAT
+    ================================= -->
+
+    <div class="chat-page">
+
+        <div class="chat-window">
+
+            <div
+                class="chat-messages"
+                id="chatMessages"
+            >
+
+                <!-- WELCOME -->
+
+                <div class="welcome-message">
+
+                    <img
+                        src="/static/images/aran-logo.svg"
+                        alt="ARAN AI"
+                        class="welcome-logo"
+                    >
+
+                    <span>
+                        Hi, I'm ARAN AI 👋
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ============================
+                 INPUT
+            ============================= -->
+
+            <div class="chat-input">
+
+                <!-- VOICE LANGUAGE -->
+
+                <button
+                    id="languageButton"
+                    type="button"
+                    onclick="toggleLanguage()"
+                    title="Change voice language"
+                >
+                    தமிழ்
+                </button>
+
+
+                <!-- MIC -->
+
+                <button
+                    id="micButton"
+                    type="button"
+                    onclick="startVoice()"
+                    title="Voice Assistant"
+                >
+                    🎤
+                </button>
+
+
+                <!-- TEXT -->
+
+                <input
+                    id="q"
+                    type="text"
+                    placeholder="Ask about coastal disasters..."
+                    autocomplete="off"
+                >
+
+
+                <!-- SEND -->
+
+                <button
+                    id="askButton"
+                    type="button"
+                    onclick="ask()"
+                >
+                    Ask ARAN
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<script>
+
+/* =========================================
+   VARIABLES
+========================================= */
+
+let recognition = null;
+let isListening = false;
+
+let voiceLanguage = "ta-IN";
+
+
+/* =========================================
+   LANGUAGE TOGGLE
+========================================= */
+
+function toggleLanguage() {
+
+    const button =
+        document.getElementById("languageButton");
+
+    if (voiceLanguage === "ta-IN") {
+
+        voiceLanguage = "en-IN";
+
+        button.textContent = "EN";
+
+        console.log("Voice language: English");
+
+    } else {
+
+        voiceLanguage = "ta-IN";
+
+        button.textContent = "தமிழ்";
+
+        console.log("Voice language: Tamil");
+
+    }
+}
+
+
+/* =========================================
+   SEND TEXT QUESTION
+========================================= */
+
+async function ask() {
+
+    const input =
+        document.getElementById("q");
+
+    const button =
+        document.getElementById("askButton");
+
+    const messages =
+        document.getElementById("chatMessages");
+
+
+    const question =
+        input.value.trim();
+
+
+    if (!question) {
+
+        input.focus();
+
+        return;
+
+    }
+
+
+    /* USER MESSAGE */
+
+    const userMessage =
+        document.createElement("div");
+
+    userMessage.className =
+        "chat-message user";
+
+    userMessage.textContent =
+        question;
+
+    messages.appendChild(
+        userMessage
+    );
+
+
+    input.value = "";
+
+
+    messages.scrollTop =
+        messages.scrollHeight;
+
+
+    /* DISABLE */
+
+    button.disabled = true;
+
+    button.textContent =
+        "Thinking...";
+
+
+    /* THINKING */
+
+    const typing =
+        document.createElement("div");
+
+    typing.className =
+        "chat-message ai typing";
+
+    typing.textContent =
+        "ARAN AI is thinking...";
+
+
+    messages.appendChild(
+        typing
+    );
+
+
+    messages.scrollTop =
+        messages.scrollHeight;
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/ask",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        question: question
+                    })
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        typing.remove();
+
+
+        /* AI MESSAGE */
+
+        const aiMessage =
+            document.createElement("div");
+
+        aiMessage.className =
+            "chat-message ai";
+
+
+        const answer =
+            data.answer ||
+            "ARAN AI did not return a response.";
+
+
+        const text =
+            document.createElement("div");
+
+        text.textContent =
+            answer;
+
+
+        aiMessage.appendChild(
+            text
+        );
+
+
+        /* LISTEN */
+
+        const speak =
+            document.createElement("button");
+
+        speak.className =
+            "speak-button";
+
+        speak.textContent =
+            "🔊 Listen";
+
+
+        speak.onclick =
+            function() {
+
+                speakAnswer(
+                    answer
+                );
+
+            };
+
+
+        aiMessage.appendChild(
+            speak
+        );
+
+
+        messages.appendChild(
+            aiMessage
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "ARAN AI error:",
+            error
+        );
+
+
+        typing.remove();
+
+
+        const errorMessage =
+            document.createElement("div");
+
+        errorMessage.className =
+            "chat-message ai";
+
+        errorMessage.textContent =
+            "ARAN AI could not process the request. Please try again.";
+
+
+        messages.appendChild(
+            errorMessage
+        );
+
+    }
+
+
+    button.disabled =
+        false;
+
+    button.textContent =
+        "Ask ARAN";
+
+
+    messages.scrollTop =
+        messages.scrollHeight;
+
+
+    input.focus();
+
+}
+
+
+/* =========================================
+   ENTER SEND
+========================================= */
+
+document
+    .getElementById("q")
+    .addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Enter"
+            ) {
+
+                event.preventDefault();
+
+                ask();
+
+            }
+
+        }
+    );
+
+
+/* =========================================
+   VOICE ASSISTANT
+========================================= */
+
+function startVoice() {
+
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+
+    if (!SpeechRecognition) {
+
+        alert(
+            "Please use Google Chrome for voice input."
+        );
+
+        return;
+
+    }
+
+
+    if (isListening) {
+
+        return;
+
+    }
+
+
+    const mic =
+        document.getElementById(
+            "micButton"
+        );
+
+    const input =
+        document.getElementById(
+            "q"
+        );
+
+
+    /* CREATE */
+
+    recognition =
+        new SpeechRecognition();
+
+
+    /*
+     * IMPORTANT:
+     *
+     * Tamil:
+     * ta-IN
+     *
+     * English:
+     * en-IN
+     */
+
+    recognition.lang =
+        voiceLanguage;
+
+
+    recognition.continuous =
+        false;
+
+
+    /*
+     * We only need the
+     * final complete sentence.
+     */
+
+    recognition.interimResults =
+        false;
+
+
+    recognition.maxAlternatives =
+        1;
+
+
+    /* START */
+
+    isListening =
+        true;
+
+
+    mic.disabled =
+        true;
+
+    mic.classList.add(
+        "listening"
+    );
+
+    mic.textContent =
+        "🔴";
+
+
+    input.placeholder =
+        voiceLanguage === "ta-IN"
+            ? "கேட்கிறேன்... பேசுங்கள்"
+            : "Listening... speak now";
+
+
+    input.value = "";
+
+
+    recognition.start();
+
+
+    /* =====================================
+       RESULT
+    ===================================== */
+
+    recognition.onresult =
+        function(event) {
+
+
+            let completeText =
+                "";
+
+
+            for (
+                let i = 0;
+                i < event.results.length;
+                i++
+            ) {
+
+                completeText +=
+                    event.results[i][0]
+                        .transcript;
+
+            }
+
+
+            completeText =
+                completeText.trim();
+
+
+            console.log(
+                "VOICE:",
+                completeText
+            );
+
+
+            if (completeText) {
+
+                input.value =
+                    completeText;
+
+            }
+
+        };
+
+
+    /* =====================================
+       ERROR
+    ===================================== */
+
+    recognition.onerror =
+        function(event) {
+
+            console.error(
+                "Speech error:",
+                event.error
+            );
+
+
+            if (
+                event.error ===
+                "not-allowed"
+            ) {
+
+                alert(
+                    "Microphone permission is blocked. Please allow microphone access."
+                );
+
+            }
+
+        };
+
+
+    /* =====================================
+       FINISHED
+    ===================================== */
+
+    recognition.onend =
+        function() {
+
+
+            isListening =
+                false;
+
+
+            mic.disabled =
+                false;
+
+
+            mic.classList.remove(
+                "listening"
+            );
+
+
+            mic.textContent =
+                "🎤";
+
+
+            input.placeholder =
+                "Ask about coastal disasters...";
+
+
+            /*
+             * ONLY AFTER SPEECH
+             * IS COMPLETELY FINISHED
+             * WE SEND ONE REQUEST.
+             */
+
+            const question =
+                input.value.trim();
+
+
+            if (question) {
+
+                ask();
+
+            }
+
+
+            input.focus();
+
+        };
+
+}
+
+
+/* =========================================
+   SPEAK ANSWER
+========================================= */
+
+function speakAnswer(text) {
+
+
+    if (
+        !("speechSynthesis" in window)
+    ) {
+
+        return;
+
+    }
+
+
+    speechSynthesis.cancel();
+
+
+    const speech =
+        new SpeechSynthesisUtterance(
+            text
+        );
+
+
+    /*
+     * Try to speak in the
+     * correct language.
+     */
+
+    speech.lang =
+        voiceLanguage;
+
+
+    speech.rate =
+        1;
+
+
+    speech.pitch =
+        1;
+
+
+    speechSynthesis.speak(
+        speech
+    );
+
+}
+
+</script>
+
+</body>
+</html>

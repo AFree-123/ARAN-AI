@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>ARAN AI — Live Alerts</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <div class="side-logo">
+            <a href="/dashboard">
+                <img
+                    src="/static/images/aran-logo.svg"
+                    alt="ARAN AI"
+                >
+            </a>
+        </div>
+
+        <nav class="nav">
+
+            <a href="/dashboard">
+                ⌂ Dashboard
+            </a>
+
+            <a href="/live-alerts">
+                🔔 Live Alerts
+            </a>
+
+            <a href="/risk-map">
+                ▧ Risk Map
+            </a>
+
+            <a href="/infrastructure">
+                ▦ Infrastructure
+            </a>
+
+            <a href="/shelters">
+                ♧ Evacuation & Shelters
+            </a>
+
+            <a href="/weather">
+                ☁ Weather & Forecast
+            </a>
+
+            <a href="/news">
+                ▤ News Intelligence
+            </a>
+
+            <a href="/assistant">
+                🤖 AI Assistant
+            </a>
+
+            <a href="/insurance">
+                ◇ Insurance (Demo)
+            </a>
+
+            <a href="/reports">
+                ▣ Reports
+            </a>
+
+            <a href="/settings">
+                ⚙ Settings
+            </a>
+
+        </nav>
+
+        <div class="side-bottom">
+
+            <div class="online">
+                <i></i>
+                Systems operational
+            </div>
+
+            ARAN AI v1.0 • Hackathon Prototype
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="page-shell">
+
+        <!-- HEADER -->
+
+        <header class="page-top">
+
+            <div class="page-title">
+
+                <div class="tag">
+                    LIVE DISASTER INTELLIGENCE
+                </div>
+
+                <h1>
+                    Live Alerts
+                </h1>
+
+                <p>
+                    Only current disaster alerts appear here —
+                    clean, focused and easy to scan.
+                </p>
+
+            </div>
+
+
+            <div class="page-actions">
+
+                <button
+                    class="module-btn"
+                    type="button"
+                >
+                    EN / தமிழ்
+                </button>
+
+                <a href="/dashboard">
+
+                    <button
+                        class="module-btn"
+                        type="button"
+                    >
+                        ← Dashboard
+                    </button>
+
+                </a>
+
+            </div>
+
+        </header>
+
+
+        <!-- =========================
+             STATISTICS
+        ========================== -->
+
+        <div class="module-grid">
+
+            <!-- ACTIVE ALERTS -->
+
+            <div class="module-stat">
+
+                <small>
+                    ACTIVE ALERTS
+                </small>
+
+                <strong
+                    id="activeCount"
+                    style="color:var(--red)"
+                >
+                    00
+                </strong>
+
+                <span>
+                    Current feed
+                </span>
+
+            </div>
+
+
+            <!-- HIGH RISK -->
+
+            <div class="module-stat">
+
+                <small>
+                    HIGH RISK
+                </small>
+
+                <strong
+                    id="highCount"
+                    style="color:var(--red)"
+                >
+                    00
+                </strong>
+
+                <span>
+                    Requires attention
+                </span>
+
+            </div>
+
+
+            <!-- VERIFIED SOURCES -->
+
+            <div class="module-stat">
+
+                <small>
+                    VERIFIED SOURCES
+                </small>
+
+                <strong
+                    id="sourceCount"
+                    style="color:var(--green)"
+                >
+                    00
+                </strong>
+
+                <span>
+                    Grounded feed
+                </span>
+
+            </div>
+
+
+            <!-- LAST UPDATE -->
+
+            <div class="module-stat">
+
+                <small>
+                    LAST UPDATE
+                </small>
+
+                <strong id="lastUpdate">
+                    --
+                </strong>
+
+                <span>
+                    IMD Live Feed
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             ALERT FEED
+        ========================== -->
+
+        <section class="module-content">
+
+            <h2>
+                Live Disaster Intelligence Feed
+            </h2>
+
+            <div
+                id="alerts"
+                class="alert-list"
+            >
+
+                <p class="small">
+                    Loading live alerts...
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         OFFICIAL IMD ALERT SCRIPT
+    ========================== -->
+
+    <script>
+
+        async function loadAlerts() {
+
+            const container =
+                document.getElementById("alerts");
+
+            if (!container) {
+                return;
+            }
+
+            try {
+
+                /*
+                 * Add timestamp to avoid browser cache.
+                 */
+
+                const response =
+                    await fetch(
+                        "/api/alerts?fresh=" + Date.now(),
+                        {
+                            method: "GET",
+                            cache: "no-store",
+                            headers: {
+                                "Cache-Control": "no-cache"
+                            }
+                        }
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "API request failed: " +
+                        response.status
+                    );
+
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                /*
+                 * Make sure alerts is always an array.
+                 */
+
+                const alerts =
+                    Array.isArray(data.alerts)
+                        ? data.alerts
+                        : [];
+
+
+                console.log(
+                    "ARAN AI IMD Live Feed alerts:",
+                    alerts
+                );
+
+
+                /* =========================
+                   STATISTICS
+                ========================== */
+
+                const activeAlerts =
+                    alerts.filter(
+                        alert =>
+                            String(
+                                alert.status || "ACTIVE"
+                            ).toUpperCase() === "ACTIVE"
+                    );
+
+
+                const highRisk =
+                    alerts.filter(
+                        alert =>
+                            String(
+                                alert.severity || ""
+                            ).toUpperCase() === "HIGH"
+                    );
+
+
+                const sources =
+                    new Set(
+                        alerts
+                            .map(
+                                alert =>
+                                    alert.source
+                            )
+                            .filter(Boolean)
+                    );
+
+
+                /* =========================
+                   UPDATE STATISTICS
+                ========================== */
+
+                const activeElement =
+                    document.getElementById(
+                        "activeCount"
+                    );
+
+
+                const highElement =
+                    document.getElementById(
+                        "highCount"
+                    );
+
+
+                const sourceElement =
+                    document.getElementById(
+                        "sourceCount"
+                    );
+
+
+                const updateElement =
+                    document.getElementById(
+                        "lastUpdate"
+                    );
+
+
+                if (activeElement) {
+
+                    activeElement.textContent =
+                        String(
+                            activeAlerts.length
+                        ).padStart(2, "0");
+
+                }
+
+
+                if (highElement) {
+
+                    highElement.textContent =
+                        String(
+                            highRisk.length
+                        ).padStart(2, "0");
+
+                }
+
+
+                if (sourceElement) {
+
+                    sourceElement.textContent =
+                        String(
+                            sources.size
+                        ).padStart(2, "0");
+
+                }
+
+
+                if (updateElement) {
+
+                    updateElement.textContent =
+                        new Date().toLocaleTimeString(
+                            "en-IN",
+                            {
+                                hour: "2-digit",
+                                minute: "2-digit"
+                            }
+                        );
+
+                }
+
+
+                /* =========================
+                   NO ALERTS
+                ========================== */
+
+                if (alerts.length === 0) {
+
+                    container.innerHTML = `
+
+                        <p class="small">
+                            No active disaster
+                            alerts available.
+                        </p>
+
+                    `;
+
+                    return;
+                }
+
+
+                /* =========================
+                   RENDER ALERT CARDS
+                ========================== */
+
+                container.innerHTML =
+                    alerts.map(
+                        alert => {
+
+                            /*
+                             * IMD ALERT FIELDS
+                             */
+
+                            const severity =
+                                String(
+                                    alert.severity || "LOW"
+                                ).toUpperCase();
+
+
+                            const hazard =
+                                alert.hazard ||
+                                "Disaster Alert";
+
+
+                            const title =
+                                alert.title ||
+                                hazard;
+
+
+                            const summary =
+                                alert.summary ||
+                                "No additional information available.";
+
+
+                            const timestamp =
+                                alert.timestamp ||
+                                "Time unavailable";
+
+
+                            const source =
+                                alert.source ||
+                                "Unknown source";
+
+
+                            const status =
+                                String(
+                                    alert.status || "ACTIVE"
+                                ).toUpperCase();
+
+
+                            /*
+                             * LOCATION
+                             * Supports IMD location
+                             * and common fallback fields.
+                             */
+
+                            let locationValue =
+                                alert.location ??
+                                alert.display_location ??
+                                alert.city ??
+                                alert.district ??
+                                alert.place ??
+                                "";
+
+
+                            /*
+                             * If location is returned
+                             * as an object, extract name.
+                             */
+
+                            if (
+                                typeof locationValue === "object" &&
+                                locationValue !== null
+                            ) {
+
+                                locationValue =
+                                    locationValue.name ??
+                                    locationValue.city ??
+                                    locationValue.district ??
+                                    locationValue.location ??
+                                    "";
+
+                            }
+
+
+                            /*
+                             * Final location.
+                             */
+
+                            const locationText =
+                                String(locationValue).trim() ||
+                                "Location unavailable";
+
+
+                            console.log(
+                                "FINAL ALERT LOCATION:",
+                                locationText
+                            );
+
+
+                            /* =========================
+                               ALERT CARD
+                            ========================== */
+
+                            return `
+
+                                <article
+                                    class="big-alert ${severity.toLowerCase()}"
+                                >
+
+                                    <div
+                                        class="big-alert-top"
+                                    >
+
+                                        <b>
+                                            ${escapeHtml(hazard)}
+                                            •
+                                            ${escapeHtml(severity)}
+                                        </b>
+
+                                        <span>
+                                            ${escapeHtml(timestamp)}
+                                        </span>
+
+                                    </div>
+
+
+                                    <h3>
+                                        ${escapeHtml(title)}
+                                    </h3>
+
+
+                                    <p>
+                                        ${escapeHtml(summary)}
+                                    </p>
+
+
+                                    <div
+                                        class="alert-meta"
+                                    >
+
+                                        ${escapeHtml(source)}
+
+                                        •
+
+                                        ${escapeHtml(locationText)}
+
+                                        •
+
+                                        ${escapeHtml(status)}
+
+                                        •
+
+                                        ✓ Verified IMD feed
+
+                                    </div>
+
+                                </article>
+
+                            `;
+
+                        }
+                    ).join("");
+
+            }
+
+
+            catch (error) {
+
+                console.error(
+                    "ARAN AI alert loading error:",
+                    error
+                );
+
+
+                container.innerHTML = `
+
+                    <p class="small">
+                        Unable to load
+                        live alert feed.
+                    </p>
+
+                `;
+
+            }
+
+        }
+
+
+        /* =========================
+           HTML SAFETY
+        ========================== */
+
+        function escapeHtml(value) {
+
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        /* =========================
+           INITIAL LOAD
+        ========================== */
+
+        loadAlerts();
+
+
+        /* =========================
+           AUTO REFRESH
+           Every 60 seconds
+        ========================== */
+
+        setInterval(
+            loadAlerts,
+            60000
+        );
+
+    </script>
+
+</body>
+
+</html>

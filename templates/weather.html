@@ -1,0 +1,1290 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>ARAN AI — Weather & Forecast</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <style>
+
+        .weather-toolbar {
+            margin-top: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .location-select {
+            background: #071d2d;
+            color: #ffffff;
+            border: 1px solid rgba(0,200,255,.30);
+            border-radius: 9px;
+            padding: 10px 14px;
+            outline: none;
+            min-width: 190px;
+        }
+
+        .weather-source {
+            color: #7fa9bf;
+            font-size: 11px;
+        }
+
+        .live-weather {
+            margin-top: 14px;
+            padding: 12px 16px;
+            border: 1px solid rgba(0,200,255,.25);
+            border-radius: 12px;
+            background: rgba(8,35,55,.72);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .live-weather-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .live-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #28e98c;
+            box-shadow: 0 0 12px rgba(40,233,140,.8);
+        }
+
+        .live-weather strong {
+            color: #fff;
+            display: block;
+            font-size: 13px;
+        }
+
+        .live-weather small {
+            color: #83aabd;
+            font-size: 11px;
+        }
+
+        .source-pill {
+            padding: 6px 10px;
+            border-radius: 18px;
+            border: 1px solid rgba(40,233,140,.35);
+            color: #42e69a;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        .weather-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: 14px;
+        }
+
+        .current-weather-card {
+            padding: 28px;
+            min-height: 210px;
+            border-radius: 14px;
+            background: #071d2d;
+            border: 1px solid rgba(0,200,255,.20);
+        }
+
+        .current-temp {
+            font-size: 62px;
+            font-weight: 800;
+            color: #f4f9ff;
+            line-height: 1;
+            margin-top: 15px;
+        }
+
+        .condition-text {
+            margin-top: 12px;
+            color: #9cc2d6;
+            font-size: 14px;
+        }
+
+        .weather-location {
+            color: #5eb8df;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+        }
+
+        .weather-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .metric-box {
+            padding: 14px;
+            border-radius: 10px;
+            background: rgba(255,255,255,.025);
+            border: 1px solid rgba(255,255,255,.06);
+        }
+
+        .metric-box small {
+            display: block;
+            color: #7198ad;
+            font-size: 10px;
+            margin-bottom: 6px;
+        }
+
+        .metric-box strong {
+            color: #ffffff;
+            font-size: 18px;
+        }
+
+        .alert-panel {
+            padding: 25px;
+            border-radius: 14px;
+            background: #071d2d;
+            border: 1px solid rgba(0,200,255,.20);
+        }
+
+        .alert-panel h2 {
+            margin-top: 0;
+        }
+
+        .alert-item {
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 9px;
+            background: rgba(255,255,255,.025);
+            border-left: 3px solid #28b8ff;
+        }
+
+        .alert-item.high {
+            border-left-color: #ff5267;
+        }
+
+        .alert-item.medium {
+            border-left-color: #ffae38;
+        }
+
+        .alert-title {
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .alert-summary {
+            margin-top: 5px;
+            color: #8db4c8;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .forecast-card {
+            padding: 20px;
+            border-radius: 12px;
+            background: #071d2d;
+            border: 1px solid rgba(0,200,255,.18);
+        }
+
+        .forecast-day {
+            color: #5eb8df;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .forecast-temp {
+            margin-top: 12px;
+            color: #fff;
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .forecast-info {
+            margin-top: 10px;
+            color: #8db4c8;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .status-note {
+            margin-top: 14px;
+            color: #668fa5;
+            font-size: 10px;
+        }
+
+        .no-alert {
+            color: #42e69a;
+            font-size: 13px;
+            padding: 14px 0;
+        }
+
+        .error-box {
+            color: #ff7180;
+            font-size: 12px;
+            padding: 14px 0;
+        }
+
+        @media (max-width: 900px) {
+
+            .weather-main {
+                grid-template-columns: 1fr;
+            }
+
+            .forecast-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .weather-toolbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .live-weather {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+    <div class="side-logo">
+        <a href="/dashboard">
+            <img src="/static/images/aran-logo.svg">
+        </a>
+    </div>
+
+    <nav class="nav">
+
+        <a href="/dashboard">⌂ Dashboard</a>
+        <a href="/live-alerts">🔔 Live Alerts</a>
+        <a href="/risk-map">▧ Risk Map</a>
+        <a href="/infrastructure">▦ Infrastructure</a>
+        <a href="/shelters">♧ Evacuation & Shelters</a>
+        <a href="/weather">☁ Weather & Forecast</a>
+        <a href="/news">▤ News Intelligence</a>
+        <a href="/assistant">🤖 AI Assistant</a>
+        <a href="/insurance">◇ Insurance (Demo)</a>
+        <a href="/reports">▣ Reports</a>
+        <a href="/settings">⚙ Settings</a>
+
+    </nav>
+
+    <div class="side-bottom">
+
+        <div class="online">
+            <i></i>
+            Systems operational
+        </div>
+
+        ARAN AI v1.0 • Hackathon Prototype
+
+    </div>
+
+</aside>
+
+
+<!-- MAIN -->
+
+<main class="page-shell">
+
+
+    <!-- HEADER -->
+
+    <header class="page-top">
+
+        <div class="page-title">
+
+            <div class="tag">
+                WEATHER INTELLIGENCE
+            </div>
+
+            <h1>
+                Weather & Forecast
+            </h1>
+
+            <p>
+                Live weather conditions, forecast indicators and
+                official hazard context.
+            </p>
+
+        </div>
+
+
+        <div class="page-actions">
+
+            <button class="module-btn">
+                EN / தமிழ்
+            </button>
+
+            <a href="/dashboard">
+                <button class="module-btn">
+                    ← Dashboard
+                </button>
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- LOCATION -->
+
+    <div class="weather-toolbar">
+
+        <div>
+
+            <div class="weather-source">
+                Weather data updates automatically
+            </div>
+
+        </div>
+
+
+        <select
+            id="locationSelect"
+            class="location-select"
+        >
+
+            <option value="nagapattinam">
+                Nagapattinam
+            </option>
+
+            <option value="cuddalore">
+                Cuddalore
+            </option>
+
+            <option value="chennai">
+                Chennai
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- LIVE IMD CONTEXT -->
+
+    <div class="live-weather">
+
+        <div class="live-weather-left">
+
+            <span class="live-dot"></span>
+
+            <div>
+
+                <strong id="liveContext">
+                    Checking official hazard information...
+                </strong>
+
+                <small id="liveDetails">
+                    Connecting to ARAN AI alert feed
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="source-pill"
+            id="alertSource"
+        >
+            CONNECTING
+        </div>
+
+    </div>
+
+
+    <!-- WEATHER MAIN -->
+
+    <div class="weather-main">
+
+
+        <!-- CURRENT -->
+
+        <section class="current-weather-card">
+
+            <div
+                class="weather-location"
+                id="weatherLocation"
+            >
+                NAGAPATTINAM
+            </div>
+
+
+            <div
+                class="current-temp"
+                id="currentTemp"
+            >
+                —
+            </div>
+
+
+            <div
+                class="condition-text"
+                id="conditionText"
+            >
+                Loading current conditions...
+            </div>
+
+
+            <div class="weather-metrics">
+
+
+                <div class="metric-box">
+
+                    <small>
+                        WIND
+                    </small>
+
+                    <strong id="windValue">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="metric-box">
+
+                    <small>
+                        WIND DIRECTION
+                    </small>
+
+                    <strong id="windDirection">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="metric-box">
+
+                    <small>
+                        PRECIPITATION
+                    </small>
+
+                    <strong id="precipValue">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="metric-box">
+
+                    <small>
+                        HUMIDITY
+                    </small>
+
+                    <strong id="humidityValue">
+                        —
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- IMD ALERTS -->
+
+        <section class="alert-panel">
+
+            <h2>
+                Official Hazard Context
+            </h2>
+
+            <div id="alertList">
+
+                <div class="status-note">
+                    Loading official information...
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <!-- NEXT 3 DAYS -->
+
+    <section
+        class="module-content"
+        style="margin-top:14px"
+    >
+
+        <h2>
+            Next 3 Days
+        </h2>
+
+
+        <div
+            class="forecast-grid"
+            id="forecastGrid"
+        >
+
+            <div class="status-note">
+                Loading forecast...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- DATA SOURCE -->
+
+    <div class="status-note" id="dataStatus">
+
+        Connecting to live weather service...
+
+    </div>
+
+
+</main>
+
+
+
+<script>
+
+
+/* =========================================================
+   LOCATION CONFIG
+   ========================================================= */
+
+const locations = {
+
+    nagapattinam: {
+        name: "Nagapattinam",
+        latitude: 10.7672,
+        longitude: 79.8449
+    },
+
+    cuddalore: {
+        name: "Cuddalore",
+        latitude: 11.7480,
+        longitude: 79.7714
+    },
+
+    chennai: {
+        name: "Chennai",
+        latitude: 13.0827,
+        longitude: 80.2707
+    }
+
+};
+
+
+let selectedLocation = "nagapattinam";
+
+
+/* =========================================================
+   DOM
+   ========================================================= */
+
+const locationSelect =
+    document.getElementById("locationSelect");
+
+const weatherLocation =
+    document.getElementById("weatherLocation");
+
+const currentTemp =
+    document.getElementById("currentTemp");
+
+const conditionText =
+    document.getElementById("conditionText");
+
+const windValue =
+    document.getElementById("windValue");
+
+const windDirection =
+    document.getElementById("windDirection");
+
+const precipValue =
+    document.getElementById("precipValue");
+
+const humidityValue =
+    document.getElementById("humidityValue");
+
+const forecastGrid =
+    document.getElementById("forecastGrid");
+
+const dataStatus =
+    document.getElementById("dataStatus");
+
+const liveContext =
+    document.getElementById("liveContext");
+
+const liveDetails =
+    document.getElementById("liveDetails");
+
+const alertSource =
+    document.getElementById("alertSource");
+
+const alertList =
+    document.getElementById("alertList");
+
+
+/* =========================================================
+   WEATHER CODE
+   ========================================================= */
+
+function weatherDescription(code) {
+
+    const map = {
+
+        0: "Clear sky",
+
+        1: "Mainly clear",
+
+        2: "Partly cloudy",
+
+        3: "Overcast",
+
+        45: "Fog",
+
+        48: "Depositing rime fog",
+
+        51: "Light drizzle",
+
+        53: "Moderate drizzle",
+
+        55: "Dense drizzle",
+
+        61: "Slight rain",
+
+        63: "Moderate rain",
+
+        65: "Heavy rain",
+
+        71: "Slight snow",
+
+        73: "Moderate snow",
+
+        75: "Heavy snow",
+
+        80: "Rain showers",
+
+        81: "Moderate rain showers",
+
+        82: "Violent rain showers",
+
+        95: "Thunderstorm",
+
+        96: "Thunderstorm with hail",
+
+        99: "Severe thunderstorm with hail"
+
+    };
+
+    return map[code] || "Weather conditions available";
+
+}
+
+
+/* =========================================================
+   WIND DIRECTION
+   ========================================================= */
+
+function windDirectionText(degrees) {
+
+    if (degrees === null || degrees === undefined) {
+        return "—";
+    }
+
+    const directions = [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+    ];
+
+    const index =
+        Math.round(degrees / 45) % 8;
+
+    return directions[index];
+
+}
+
+
+/* =========================================================
+   LOAD WEATHER
+   ========================================================= */
+
+async function loadWeather() {
+
+    const location =
+        locations[selectedLocation];
+
+
+    weatherLocation.textContent =
+        location.name.toUpperCase();
+
+
+    currentTemp.textContent =
+        "—";
+
+    conditionText.textContent =
+        "Loading current conditions...";
+
+
+    try {
+
+        const url =
+            "https://api.open-meteo.com/v1/forecast" +
+            "?latitude=" + location.latitude +
+            "&longitude=" + location.longitude +
+            "&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m" +
+            "&hourly=precipitation_probability,temperature_2m,weather_code" +
+            "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code" +
+            "&forecast_days=3" +
+            "&timezone=auto";
+
+
+        const response =
+            await fetch(url, {
+                cache: "no-store"
+            });
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Weather service HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const current =
+            data.current;
+
+
+        /* CURRENT TEMPERATURE */
+
+        currentTemp.textContent =
+            Math.round(current.temperature_2m) +
+            "°C";
+
+
+        /* CONDITION */
+
+        conditionText.textContent =
+            weatherDescription(
+                current.weather_code
+            );
+
+
+        /* WIND */
+
+        windValue.textContent =
+            Math.round(
+                current.wind_speed_10m
+            ) +
+            " km/h";
+
+
+        windDirection.textContent =
+            windDirectionText(
+                current.wind_direction_10m
+            );
+
+
+        /* PRECIPITATION */
+
+        precipValue.textContent =
+            current.precipitation +
+            " mm";
+
+
+        /* HUMIDITY */
+
+        humidityValue.textContent =
+            current.relative_humidity_2m +
+            "%";
+
+
+        /* FORECAST */
+
+        renderForecast(data);
+
+
+        dataStatus.textContent =
+            "Live weather updated: " +
+            new Date().toLocaleString() +
+            " • Weather source: Open-Meteo";
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "ARAN AI Weather:",
+            error
+        );
+
+
+        currentTemp.textContent =
+            "—";
+
+
+        conditionText.textContent =
+            "Weather data unavailable";
+
+
+        windValue.textContent =
+            "—";
+
+
+        windDirection.textContent =
+            "—";
+
+
+        precipValue.textContent =
+            "—";
+
+
+        humidityValue.textContent =
+            "—";
+
+
+        forecastGrid.innerHTML =
+            '<div class="error-box">' +
+            'Live weather service is currently unavailable.' +
+            '</div>';
+
+
+        dataStatus.textContent =
+            "Could not retrieve live weather data.";
+
+    }
+
+}
+
+
+/* =========================================================
+   FORECAST
+   ========================================================= */
+
+function renderForecast(data) {
+
+    const daily =
+        data.daily;
+
+
+    if (
+        !daily ||
+        !daily.time ||
+        daily.time.length === 0
+    ) {
+
+        forecastGrid.innerHTML =
+            '<div class="status-note">' +
+            'Forecast data unavailable.' +
+            '</div>';
+
+        return;
+
+    }
+
+
+    forecastGrid.innerHTML = "";
+
+
+    for (
+        let i = 0;
+        i < daily.time.length;
+        i++
+    ) {
+
+
+        const date =
+            new Date(
+                daily.time[i] + "T12:00:00"
+            );
+
+
+        const dayName =
+            date.toLocaleDateString(
+                "en-IN",
+                {
+                    weekday: "short",
+                    day: "numeric",
+                    month: "short"
+                }
+            );
+
+
+        const max =
+            Math.round(
+                daily.temperature_2m_max[i]
+            );
+
+
+        const min =
+            Math.round(
+                daily.temperature_2m_min[i]
+            );
+
+
+        const rain =
+            daily.precipitation_probability_max[i];
+
+
+        const description =
+            weatherDescription(
+                daily.weather_code[i]
+            );
+
+
+        const card =
+            document.createElement("div");
+
+
+        card.className =
+            "forecast-card";
+
+
+        card.innerHTML = `
+
+            <div class="forecast-day">
+                ${dayName}
+            </div>
+
+            <div class="forecast-temp">
+                ${max}°C / ${min}°C
+            </div>
+
+            <div class="forecast-info">
+
+                ${description}<br>
+
+                Rain probability:
+                ${rain}%
+
+            </div>
+
+        `;
+
+
+        forecastGrid.appendChild(card);
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD IMD ALERTS
+   ========================================================= */
+
+async function loadOfficialAlerts() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/alerts",
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Alert API HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const alerts =
+            Array.isArray(data.alerts)
+                ? data.alerts
+                : [];
+
+
+        alertSource.textContent =
+            data.source ||
+            "OFFICIAL FEED";
+
+
+        renderAlerts(alerts);
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "ARAN AI IMD:",
+            error
+        );
+
+
+        liveContext.textContent =
+            "Official hazard feed unavailable";
+
+
+        liveDetails.textContent =
+            "Please verify current warnings directly with official authorities.";
+
+
+        alertSource.textContent =
+            "OFFLINE";
+
+
+        alertList.innerHTML =
+            '<div class="error-box">' +
+            'Official alert information is currently unavailable.' +
+            '</div>';
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER ALERTS
+   ========================================================= */
+
+function renderAlerts(alerts) {
+
+
+    if (
+        !alerts ||
+        alerts.length === 0
+    ) {
+
+        liveContext.textContent =
+            "No active official hazard alert detected";
+
+
+        liveDetails.textContent =
+            "Continue monitoring official weather and disaster information.";
+
+
+        alertList.innerHTML =
+            '<div class="no-alert">' +
+            '✓ No active official hazard alert in the connected feed.' +
+            '</div>';
+
+        return;
+
+    }
+
+
+    const high =
+        alerts.filter(
+            a =>
+                String(a.severity || "")
+                    .toUpperCase() === "HIGH"
+        );
+
+
+    const medium =
+        alerts.filter(
+            a =>
+                String(a.severity || "")
+                    .toUpperCase() === "MEDIUM"
+        );
+
+
+    if (high.length > 0) {
+
+        liveContext.textContent =
+            "High-severity official hazard information detected";
+
+        liveDetails.textContent =
+            "Review the latest official advisory before taking action.";
+
+    }
+
+    else if (medium.length > 0) {
+
+        liveContext.textContent =
+            "Moderate official hazard information detected";
+
+        liveDetails.textContent =
+            "Monitor the latest official advisory.";
+
+    }
+
+    else {
+
+        liveContext.textContent =
+            "Official hazard information available";
+
+        liveDetails.textContent =
+            "Review the latest advisory details below.";
+
+    }
+
+
+    alertList.innerHTML = "";
+
+
+    alerts
+        .slice(0, 5)
+        .forEach(alert => {
+
+
+            const severity =
+                String(
+                    alert.severity || ""
+                ).toLowerCase();
+
+
+            const item =
+                document.createElement("div");
+
+
+            item.className =
+                "alert-item " +
+                severity;
+
+
+            const title =
+                alert.title ||
+                alert.hazard ||
+                "Official advisory";
+
+
+            const summary =
+                alert.summary ||
+                "Official information available.";
+
+
+            const date =
+                alert.date ||
+                alert.issue_time ||
+                "";
+
+
+            item.innerHTML = `
+
+                <div class="alert-title">
+                    ${escapeHtml(title)}
+                </div>
+
+                <div class="alert-summary">
+                    ${escapeHtml(summary)}
+                    ${date ? "<br>Updated: " + escapeHtml(date) : ""}
+                </div>
+
+            `;
+
+
+            alertList.appendChild(item);
+
+        });
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeHtml(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================================
+   LOCATION CHANGE
+   ========================================================= */
+
+locationSelect.addEventListener(
+    "change",
+    function () {
+
+        selectedLocation =
+            this.value;
+
+        loadWeather();
+
+    }
+);
+
+
+/* =========================================================
+   INITIAL LOAD
+   ========================================================= */
+
+loadWeather();
+
+loadOfficialAlerts();
+
+
+/* =========================================================
+   AUTO REFRESH
+   ========================================================= */
+
+setInterval(
+    loadWeather,
+    5 * 60 * 1000
+);
+
+
+setInterval(
+    loadOfficialAlerts,
+    60 * 1000
+);
+
+</script>
+
+
+</body>
+
+</html>

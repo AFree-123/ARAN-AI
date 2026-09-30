@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 130">
+<defs>
+  <linearGradient id="b" x1="0" x2="1" y1="1" y2="0"><stop stop-color="#0878ff"/><stop offset="1" stop-color="#28d9ff"/></linearGradient>
+  <linearGradient id="g" x1="0" x2="1"><stop stop-color="#27d47d"/><stop offset="1" stop-color="#a7ef45"/></linearGradient>
+</defs>
+<path d="M22 102 L73 22 Q80 11 88 22 L126 78 L111 94 L85 57 L58 102 Z" fill="url(#b)"/>
+<path d="M55 88 Q83 65 108 87 Q127 103 150 72" fill="none" stroke="url(#g)" stroke-width="12" stroke-linecap="round"/>
+<path d="M122 32 q20 -20 40 0 M129 20 q17 -17 34 0" fill="none" stroke="#38e3b1" stroke-width="5" stroke-linecap="round"/>
+<circle cx="128" cy="32" r="6" fill="#21d9ff"/>
+<text x="160" y="67" font-family="Arial,Segoe UI,sans-serif" font-size="48" font-weight="800" fill="#f3f8ff">ARAN</text>
+<text x="304" y="67" font-family="Arial,Segoe UI,sans-serif" font-size="48" font-weight="800" fill="#28cfff">AI</text>
+<text x="161" y="91" font-family="Arial,Segoe UI,sans-serif" font-size="10" letter-spacing="2" fill="#9bb2c8">COASTAL DISASTER RESILIENCY &amp; EARLY WARNING</text>
+</svg>
