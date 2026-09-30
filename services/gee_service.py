@@ -1,12 +1,140 @@
-import ee
+import os
+import json
 from datetime import datetime, timedelta, timezone
+
+import ee
+
+
+# =========================================================
+# GOOGLE EARTH ENGINE CONFIGURATION
+# =========================================================
+
+EE_PROJECT = "a2znexus-final"
+
+# Render Secret File
+RENDER_SERVICE_ACCOUNT_FILE = "/etc/secrets/service-account.json"
+
+# Local development fallback
+LOCAL_SERVICE_ACCOUNT_FILE = "service-account.json"
+
+_ee_initialized = False
 
 
 # =========================================================
 # GOOGLE EARTH ENGINE INITIALIZATION
 # =========================================================
 
-ee.Initialize(project="a2znexus-final")
+def initialize_earth_engine():
+    """
+    Initialize Google Earth Engine.
+
+    Priority:
+    1. Render Secret File
+    2. Local service-account.json
+    3. Existing local Earth Engine credentials
+    """
+
+    global _ee_initialized
+
+    if _ee_initialized:
+        return True
+
+    try:
+        # -------------------------------------------------
+        # RENDER / SERVER ENVIRONMENT
+        # -------------------------------------------------
+        if os.path.exists(RENDER_SERVICE_ACCOUNT_FILE):
+
+            with open(
+                RENDER_SERVICE_ACCOUNT_FILE,
+                "r",
+                encoding="utf-8"
+            ) as f:
+                service_account_info = json.load(f)
+
+            service_account_email = service_account_info["client_email"]
+
+            credentials = ee.ServiceAccountCredentials(
+                service_account_email,
+                RENDER_SERVICE_ACCOUNT_FILE
+            )
+
+            ee.Initialize(
+                credentials=credentials,
+                project=EE_PROJECT
+            )
+
+            _ee_initialized = True
+
+            print(
+                "EARTH ENGINE CONNECTED "
+                "USING RENDER SERVICE ACCOUNT"
+            )
+
+            return True
+
+        # -------------------------------------------------
+        # LOCAL SERVICE ACCOUNT FALLBACK
+        # -------------------------------------------------
+        if os.path.exists(LOCAL_SERVICE_ACCOUNT_FILE):
+
+            with open(
+                LOCAL_SERVICE_ACCOUNT_FILE,
+                "r",
+                encoding="utf-8"
+            ) as f:
+                service_account_info = json.load(f)
+
+            service_account_email = service_account_info["client_email"]
+
+            credentials = ee.ServiceAccountCredentials(
+                service_account_email,
+                LOCAL_SERVICE_ACCOUNT_FILE
+            )
+
+            ee.Initialize(
+                credentials=credentials,
+                project=EE_PROJECT
+            )
+
+            _ee_initialized = True
+
+            print(
+                "EARTH ENGINE CONNECTED "
+                "USING LOCAL SERVICE ACCOUNT"
+            )
+
+            return True
+
+        # -------------------------------------------------
+        # LOCAL USER AUTHENTICATION FALLBACK
+        # -------------------------------------------------
+        ee.Initialize(
+            project=EE_PROJECT
+        )
+
+        _ee_initialized = True
+
+        print(
+            "EARTH ENGINE CONNECTED "
+            "USING LOCAL AUTHENTICATION"
+        )
+
+        return True
+
+    except Exception as e:
+
+        print(
+            "\n========== EARTH ENGINE ERROR =========="
+        )
+
+        print(str(e))
+
+        print(
+            "========================================\n"
+        )
+
+        return False
 
 
 # =========================================================
@@ -15,11 +143,25 @@ ee.Initialize(project="a2znexus-final")
 
 def get_rainfall_layer():
 
+    if not initialize_earth_engine():
+
+        return {
+            "status": "ERROR",
+            "error": "Google Earth Engine authentication failed.",
+            "dataset": "NASA GPM IMERG V07",
+            "layer": "GEE Near-Real-Time Rainfall"
+        }
+
     collection = (
-        ee.ImageCollection("NASA/GPM_L3/IMERG_V07")
+        ee.ImageCollection(
+            "NASA/GPM_L3/IMERG_V07"
+        )
         .filterBounds(
             ee.Geometry.Rectangle([
-                68, 6, 98, 37
+                68,
+                6,
+                98,
+                37
             ])
         )
         .sort(
@@ -31,9 +173,10 @@ def get_rainfall_layer():
     image = (
         collection
         .first()
-        .select("precipitation")
+        .select(
+            "precipitation"
+        )
     )
-
 
     vis_params = {
 
@@ -56,13 +199,13 @@ def get_rainfall_layer():
 
     }
 
-
     map_id = image.getMapId(
         vis_params
     )
 
-
     return {
+
+        "status": "CONNECTED",
 
         "tile_url":
             map_id[
@@ -92,15 +235,48 @@ def get_live_insurance_rainfall(
     Retrieve recent rainfall observations from
     NASA GPM IMERG V07 through Google Earth Engine.
 
-    This is decision-support / prototype data.
-    It is NOT an insurance contract measurement.
+    Prototype decision-support data only.
+    Not an insurance contract measurement.
     """
 
+    if not initialize_earth_engine():
+
+        return {
+
+            "status":
+                "ERROR",
+
+            "rainfall_mm":
+                None,
+
+            "image_count":
+                0,
+
+            "hours":
+                hours,
+
+            "latitude":
+                latitude,
+
+            "longitude":
+                longitude,
+
+            "source":
+                "NASA GPM IMERG V07",
+
+            "updated_at":
+                datetime.now(
+                    timezone.utc
+                ).isoformat(),
+
+            "error":
+                "Google Earth Engine authentication failed."
+
+        }
 
     end_time = datetime.now(
         timezone.utc
     )
-
 
     start_time = (
         end_time -
@@ -109,12 +285,10 @@ def get_live_insurance_rainfall(
         )
     )
 
-
     point = ee.Geometry.Point([
         longitude,
         latitude
     ])
-
 
     collection = (
 
@@ -137,13 +311,11 @@ def get_live_insurance_rainfall(
 
     )
 
-
     image_count = (
         collection
         .size()
         .getInfo()
     )
-
 
     if image_count == 0:
 
@@ -175,31 +347,17 @@ def get_live_insurance_rainfall(
 
         }
 
-
-    # IMERG precipitation band is
-    # represented as a rate.
-    #
-    # IMERG V07 provides approximately
-    # 30-minute observations.
-    #
-    # Therefore:
-    #
-    # rate × 0.5 hour
-    #
-    # gives approximate rainfall depth
-    # contribution for each image.
-
-
     rainfall_rate_sum = (
         collection.sum()
     )
-
 
     rainfall_result = (
 
         rainfall_rate_sum
 
-        .multiply(0.5)
+        .multiply(
+            0.5
+        )
 
         .reduceRegion(
 
@@ -224,7 +382,6 @@ def get_live_insurance_rainfall(
         .getInfo()
 
     )
-
 
     if rainfall_result is None:
 
@@ -256,12 +413,12 @@ def get_live_insurance_rainfall(
 
         }
 
-
     rainfall_mm = round(
-        float(rainfall_result),
+        float(
+            rainfall_result
+        ),
         2
     )
-
 
     return {
 
