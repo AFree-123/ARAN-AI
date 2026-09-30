@@ -3,3 +3,4 @@ python-dotenv
 google-genai
 firebase-admin
 gunicorn
+earthengine-api
