@@ -1,263 +1,806 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>ARAN AI — Secure Access</title>
+    <meta charset="UTF-8">
 
-  <link
-    rel="stylesheet"
-    href="{{ url_for('static', filename='css/style.css') }}"
-  >
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>ARAN AI — Secure Access</title>
+
+
+    <!-- EXISTING ARAN AI CSS -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+
+    <!-- =========================================
+         LOGIN CARD ONLY — COMPACT
+         LEFT SIDE IS NOT CHANGED
+    ========================================== -->
+
+    <style>
+
+        /* =========================================
+           FULL SCREEN
+        ========================================== */
+
+        html,
+        body {
+
+            width: 100%;
+            height: 100%;
+
+            margin: 0;
+            padding: 0;
+
+            overflow: hidden;
+
+        }
+
+
+        .login-screen {
+
+            width: 100%;
+            height: 100vh;
+
+            overflow: hidden;
+
+        }
+
+
+        /* =========================================
+           RIGHT LOGIN CARD ONLY
+           LEFT SIDE REMAINS ORIGINAL
+        ========================================== */
+
+        .login-card {
+
+            transform: scale(0.92);
+
+            transform-origin: center center;
+
+        }
+
+
+        /* =========================================
+           RIGHT CARD LOGO
+        ========================================== */
+
+        .login-card .card-brand {
+
+            margin-bottom: 7px;
+
+        }
+
+
+        .login-card .card-brand img {
+
+            width: 95px;
+
+            height: auto;
+
+        }
+
+
+        /* =========================================
+           WELCOME BACK HEADING
+        ========================================== */
+
+        .login-card .login-heading {
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .login-card .login-heading .eyebrow {
+
+            font-size: 9px;
+
+        }
+
+
+        .login-card .login-heading h2 {
+
+            font-size: 24px;
+
+            line-height: 1.1;
+
+            margin: 5px 0;
+
+        }
+
+
+        .login-card .login-heading p {
+
+            font-size: 11px;
+
+            line-height: 1.35;
+
+            margin: 0;
+
+        }
+
+
+        /* =========================================
+           LOGIN TABS
+        ========================================== */
+
+        .login-card .tabs {
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .login-card .tabs button {
+
+            padding: 8px 10px;
+
+            font-size: 10px;
+
+        }
+
+
+        /* =========================================
+           INPUT FIELDS
+        ========================================== */
+
+        .login-card .field {
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .login-card .field label {
+
+            font-size: 9px;
+
+            margin-bottom: 4px;
+
+        }
+
+
+        .login-card .field input {
+
+            height: 36px;
+
+            padding: 7px 10px;
+
+            font-size: 11px;
+
+            box-sizing: border-box;
+
+        }
+
+
+        /* =========================================
+           REMEMBER + FORGOT PASSWORD
+        ========================================== */
+
+        .login-card .login-options {
+
+            margin: 6px 0 10px;
+
+            font-size: 9px;
+
+        }
+
+
+        /* =========================================
+           LOGIN BUTTON
+        ========================================== */
+
+        .login-card .btn.primary {
+
+            height: 38px;
+
+            min-height: 38px;
+
+            padding: 8px 12px;
+
+            font-size: 11px;
+
+        }
+
+
+        /* =========================================
+           OR
+        ========================================== */
+
+        .login-card .or {
+
+            margin: 8px 0;
+
+        }
+
+
+        .login-card .or span {
+
+            font-size: 9px;
+
+        }
+
+
+        /* =========================================
+           GOOGLE BUTTON
+        ========================================== */
+
+        .login-card .btn.ghost {
+
+            height: 36px;
+
+            min-height: 36px;
+
+            padding: 8px 12px;
+
+            font-size: 10px;
+
+        }
+
+
+        /* =========================================
+           SECURITY BOX
+        ========================================== */
+
+        .login-card .secure {
+
+            margin-top: 8px;
+
+            padding: 7px 9px;
+
+            font-size: 8px;
+
+            line-height: 1.25;
+
+        }
+
+
+        .login-card .secure b {
+
+            font-size: 9px;
+
+        }
+
+
+        .login-card .secure span {
+
+            font-size: 8px;
+
+        }
+
+
+        /* =========================================
+           SMALL HEIGHT SCREEN
+        ========================================== */
+
+        @media (max-height: 750px) {
+
+            .login-card {
+
+                transform: scale(0.90);
+
+            }
+
+        }
+
+
+        /* =========================================
+           MOBILE
+        ========================================== */
+
+        @media (max-width: 900px) {
+
+            html,
+            body {
+
+                overflow: auto;
+
+            }
+
+
+            .login-screen {
+
+                height: auto;
+
+                min-height: 100vh;
+
+                overflow: visible;
+
+            }
+
+
+            .login-card {
+
+                transform: none;
+
+            }
+
+        }
+
+    </style>
+
 </head>
+
 
 <body class="login-page">
 
+
+<!-- =====================================================
+     MAIN LOGIN SCREEN
+====================================================== -->
+
 <main class="login-screen">
 
-  <!-- =========================
-       LEFT SIDE — ARAN AI
-       ========================= -->
-  <section class="login-hero">
 
-    <div class="hero-brand">
-      <img
-        src="{{ url_for('static', filename='images/aran-logo.svg') }}"
-        alt="ARAN AI"
-      >
-    </div>
+    <!-- =================================================
+         LEFT SIDE — UNCHANGED
+    ================================================== -->
 
-    <div class="tag">
-      FROM INFORMATION → INTELLIGENCE → ACTION
-    </div>
+    <section class="login-hero">
 
-    <h1>
-      Safer Coasts.<br>
-      <span>Stronger Communities.</span>
-    </h1>
 
-    <p>
-      AI-powered early warnings, geospatial risk intelligence
-      and ready-to-act insights for coastal disaster resilience.
-    </p>
+        <!-- ARAN AI LOGO -->
 
-    <div class="login-features">
+        <div class="hero-brand">
 
-      <div class="login-feature">
-        <b>◉</b>
-        <div>
-          <strong>Live Monitoring</strong>
-          <span>
-            Cyclone, rainfall &amp; storm-surge intelligence
-          </span>
+            <img
+                src="{{ url_for('static', filename='images/aran-logo.svg') }}"
+                alt="ARAN AI"
+            >
+
         </div>
-      </div>
 
-      <div class="login-feature">
-        <b>⌖</b>
-        <div>
-          <strong>Satellite Intelligence</strong>
-          <span>
-            Google Earth Engine risk layers
-          </span>
+
+        <!-- TAG -->
+
+        <div class="tag">
+
+            FROM INFORMATION → INTELLIGENCE → ACTION
+
         </div>
-      </div>
 
-      <div class="login-feature">
-        <b>!</b>
-        <div>
-          <strong>Grounded AI</strong>
-          <span>
-            Source-based simple explanations
-          </span>
+
+        <!-- MAIN HEADING -->
+
+        <h1>
+
+            Safer Coasts.<br>
+
+            <span>
+                Stronger Communities.
+            </span>
+
+        </h1>
+
+
+        <!-- DESCRIPTION -->
+
+        <p>
+
+            AI-powered early warnings, geospatial risk
+            intelligence and ready-to-act insights for
+            coastal disaster resilience.
+
+        </p>
+
+
+        <!-- FEATURES -->
+
+        <div class="login-features">
+
+
+            <!-- LIVE MONITORING -->
+
+            <div class="login-feature">
+
+                <b>◉</b>
+
+                <div>
+
+                    <strong>
+                        Live Monitoring
+                    </strong>
+
+                    <span>
+                        Cyclone, rainfall &amp;
+                        storm-surge intelligence
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- SATELLITE -->
+
+            <div class="login-feature">
+
+                <b>⌖</b>
+
+                <div>
+
+                    <strong>
+                        Satellite Intelligence
+                    </strong>
+
+                    <span>
+                        Google Earth Engine
+                        risk layers
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- GROUNDED AI -->
+
+            <div class="login-feature">
+
+                <b>!</b>
+
+                <div>
+
+                    <strong>
+                        Grounded AI
+                    </strong>
+
+                    <span>
+                        Source-based simple
+                        explanations
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- PEOPLE & ASSETS -->
+
+            <div class="login-feature">
+
+                <b>♧</b>
+
+                <div>
+
+                    <strong>
+                        People &amp; Assets
+                    </strong>
+
+                    <span>
+                        Infrastructure and
+                        shelter exposure
+                    </span>
+
+                </div>
+
+            </div>
+
+
         </div>
-      </div>
 
-      <div class="login-feature">
-        <b>♧</b>
-        <div>
-          <strong>People &amp; Assets</strong>
-          <span>
-            Infrastructure and shelter exposure
-          </span>
+    </section>
+
+
+
+    <!-- =================================================
+         RIGHT SIDE — LOGIN
+    ================================================== -->
+
+    <section class="login-card">
+
+
+        <!-- LOGO -->
+
+        <div class="card-brand">
+
+            <img
+                src="{{ url_for('static', filename='images/aran-logo.svg') }}"
+                alt="ARAN AI"
+            >
+
         </div>
-      </div>
-
-    </div>
-
-  </section>
 
 
-  <!-- =========================
-       RIGHT SIDE — LOGIN
-       ========================= -->
-  <section class="login-card">
+        <!-- HEADING -->
 
-    <div class="card-brand">
-      <img
-        src="{{ url_for('static', filename='images/aran-logo.svg') }}"
-        alt="ARAN AI"
-      >
-    </div>
-
-    <div class="login-heading">
-
-      <span class="eyebrow">
-        SECURE ACCESS
-      </span>
-
-      <h2>
-        Welcome back
-      </h2>
-
-      <p>
-        Access live alerts, risk maps and AI-powered
-        disaster intelligence.
-      </p>
-
-    </div>
+        <div class="login-heading">
 
 
-    <!-- LOGIN TABS -->
+            <span class="eyebrow">
 
-    <div class="tabs">
+                SECURE ACCESS
 
-      <button
-        class="active"
-        type="button"
-      >
-        Authority Login
-      </button>
-
-      <button
-        type="button"
-      >
-        Public Access
-      </button>
-
-    </div>
+            </span>
 
 
-    <!-- =========================
-         FIREBASE EMAIL LOGIN
-         ========================= -->
+            <h2>
 
-    <form
-      id="loginForm"
-      onsubmit="event.preventDefault(); firebaseLogin();"
-    >
+                Welcome back
 
-      <div class="field">
+            </h2>
 
-        <label for="email">
-          EMAIL ID
-        </label>
 
-        <input
-          id="email"
-          type="email"
-          placeholder="officer@example.gov.in"
-          autocomplete="email"
-          required
+            <p>
+
+                Access live alerts, risk maps and
+                AI-powered disaster intelligence.
+
+            </p>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             LOGIN TABS
+        ================================================== -->
+
+        <div class="tabs">
+
+
+            <button
+                class="active"
+                type="button"
+            >
+
+                Authority Login
+
+            </button>
+
+
+            <button
+                type="button"
+            >
+
+                Public Access
+
+            </button>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             EMAIL LOGIN
+        ================================================== -->
+
+        <form
+            id="loginForm"
+            onsubmit="event.preventDefault(); firebaseLogin();"
         >
 
-      </div>
+
+            <!-- EMAIL -->
+
+            <div class="field">
+
+                <label for="email">
+
+                    EMAIL ID
+
+                </label>
 
 
-      <div class="field">
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="officer@example.gov.in"
+                    autocomplete="email"
+                    required
+                >
 
-        <label for="password">
-          PASSWORD
-        </label>
+            </div>
 
-        <input
-          id="password"
-          type="password"
-          placeholder="Enter password"
-          autocomplete="current-password"
-          required
+
+
+            <!-- PASSWORD -->
+
+            <div class="field">
+
+                <label for="password">
+
+                    PASSWORD
+
+                </label>
+
+
+                <input
+                    id="password"
+                    type="password"
+                    placeholder="Enter password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- OPTIONS -->
+
+            <div class="login-options">
+
+
+                <label>
+
+                    <input
+                        type="checkbox"
+                        id="rememberMe"
+                    >
+
+                    Remember me
+
+                </label>
+
+
+                <a
+                    href="#"
+                    onclick="
+                        event.preventDefault();
+                        firebaseForgotPassword();
+                    "
+                >
+
+                    Forgot password?
+
+                </a>
+
+
+            </div>
+
+
+
+            <!-- FIREBASE MESSAGE -->
+
+            <div
+                id="firebaseAuthMessage"
+            ></div>
+
+
+
+            <!-- LOGIN -->
+
+            <button
+                class="btn primary"
+                type="submit"
+            >
+
+                Login
+
+                <span>
+                    →
+                </span>
+
+            </button>
+
+
+        </form>
+
+
+
+        <!-- =================================================
+             OR
+        ================================================== -->
+
+        <div class="or">
+
+            <span>
+                OR
+            </span>
+
+        </div>
+
+
+
+        <!-- =================================================
+             GOOGLE LOGIN
+        ================================================== -->
+
+        <button
+            class="btn ghost"
+            type="button"
+            onclick="firebaseGoogleLogin()"
         >
 
-      </div>
+            Continue with Google
+
+            <span>
+                →
+            </span>
+
+        </button>
 
 
-      <div class="login-options">
 
-        <label>
-          <input
-            type="checkbox"
-            id="rememberMe"
-          >
-          Remember me
-        </label>
+        <!-- =================================================
+             CREATE ACCOUNT
+        ================================================== -->
 
-        <a href="#">
-          Forgot password?
-        </a>
+        <div
+            style="
+                text-align:center;
+                margin-top:10px;
+                font-size:10px;
+            "
+        >
 
-      </div>
+            <span style="opacity:.7;">
 
+                Don't have an account?
 
-      <button
-        class="btn primary"
-        type="submit"
-      >
-        Login
-        <span>→</span>
-      </button>
-
-    </form>
+            </span>
 
 
-    <!-- =========================
-         GOOGLE LOGIN
-         ========================= -->
+            <a
+                href="/register"
+                style="
+                    color:#38bdf8;
+                    text-decoration:none;
+                    font-weight:600;
+                    margin-left:4px;
+                "
+            >
 
-    <div class="or">
-      <span>OR</span>
-    </div>
+                Create Account
 
+            </a>
 
-    <button
-      class="btn ghost"
-      type="button"
-      onclick="firebaseGoogleLogin()"
-    >
-      Continue with Google
-      <span>→</span>
-    </button>
+        </div>
 
 
-    <!-- =========================
-         SECURITY MESSAGE
-         ========================= -->
 
-    <div class="secure">
+        <!-- =================================================
+             SECURITY
+        ================================================== -->
 
-      <b>
-        🛡 Secure access
-      </b>
+        <div class="secure">
 
-      <span>
-        Authorized users only · Hackathon prototype
-      </span>
+            <b>
 
-    </div>
+                🛡 Secure access
 
-  </section>
+            </b>
+
+
+            <span>
+
+                Authorized users only ·
+                Hackathon prototype
+
+            </span>
+
+        </div>
+
+
+    </section>
+
 
 </main>
 
 
-<!-- =========================
+
+<!-- =====================================================
      FIREBASE AUTHENTICATION
-     ========================= -->
+====================================================== -->
 
 <script
-  type="module"
-  src="{{ url_for('static', filename='js/firebase-auth.js') }}"
+    type="module"
+    src="{{ url_for('static', filename='js/firebase-auth.js') }}"
 ></script>
 
+
 </body>
+
 </html>

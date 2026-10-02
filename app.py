@@ -1,11 +1,21 @@
 import os
 
-from flask import Flask, render_template, jsonify, request
+from flask import (
+    Flask,
+    render_template,
+    jsonify,
+    request
+)
+
 from dotenv import load_dotenv
+
+
+# =========================================================
+# SERVICES
+# =========================================================
 
 from services.gee_service import get_rainfall_layer
 from services.weather_service import get_live_rainfall
-
 from services.cyclone_service import get_cyclone_status
 from services.imd_alert_service import get_imd_alerts
 
@@ -24,6 +34,7 @@ load_dotenv()
 app = Flask(__name__)
 
 
+# Existing data file
 DATA_FILE = os.path.join(
     "data",
     "alerts.json"
@@ -34,85 +45,158 @@ DATA_FILE = os.path.join(
 # PAGE ROUTES
 # =========================================================
 
+
+# ---------------------------------------------------------
+# LOGIN
+# ---------------------------------------------------------
+
 @app.route("/")
 def login():
+
     return render_template(
         "login.html"
     )
 
 
+# ---------------------------------------------------------
+# REGISTER
+# ---------------------------------------------------------
+
+@app.route("/register")
+def register():
+
+    return render_template(
+        "register.html"
+    )
+
+
+# ---------------------------------------------------------
+# DASHBOARD
+# ---------------------------------------------------------
+
 @app.route("/dashboard")
 def dashboard():
+
     return render_template(
         "dashboard.html"
     )
 
 
+# ---------------------------------------------------------
+# LIVE ALERTS
+# ---------------------------------------------------------
+
 @app.route("/live-alerts")
 def live_alerts():
+
     return render_template(
         "live-alerts.html"
     )
 
 
+# ---------------------------------------------------------
+# RISK MAP
+# ---------------------------------------------------------
+
 @app.route("/risk-map")
 def risk_map():
+
     return render_template(
         "risk-map.html"
     )
 
 
+# ---------------------------------------------------------
+# INFRASTRUCTURE
+# ---------------------------------------------------------
+
 @app.route("/infrastructure")
 def infrastructure():
+
     return render_template(
         "infrastructure.html"
     )
 
 
+# ---------------------------------------------------------
+# SHELTERS
+# ---------------------------------------------------------
+
 @app.route("/shelters")
 def shelters():
+
     return render_template(
         "shelters.html"
     )
 
 
+# ---------------------------------------------------------
+# WEATHER
+# ---------------------------------------------------------
+
 @app.route("/weather")
 def weather():
+
     return render_template(
         "weather.html"
     )
 
 
+# ---------------------------------------------------------
+# NEWS
+# ---------------------------------------------------------
+
 @app.route("/news")
 def news():
+
     return render_template(
         "news.html"
     )
 
 
+# ---------------------------------------------------------
+# AI ASSISTANT
+# ---------------------------------------------------------
+
 @app.route("/assistant")
 def assistant():
+
     return render_template(
         "assistant.html"
     )
 
 
+# ---------------------------------------------------------
+# INSURANCE
+# ---------------------------------------------------------
+
 @app.route("/insurance")
 def insurance():
+
     return render_template(
         "insurance.html"
     )
 
 
+# ---------------------------------------------------------
+# REPORTS
+# ---------------------------------------------------------
+
 @app.route("/reports")
 def reports():
+
     return render_template(
         "reports.html"
     )
 
 
+# ---------------------------------------------------------
+# SETTINGS
+# ---------------------------------------------------------
+
 @app.route("/settings")
 def settings():
+
     return render_template(
         "settings.html"
     )
@@ -460,6 +544,7 @@ def api_insurance():
         # -------------------------------------------------
 
         latitude = 10.7672
+
         longitude = 79.8449
 
         location_name = "Nagapattinam"
@@ -758,5 +843,4 @@ if __name__ == "__main__":
         host="127.0.0.1",
 
         port=5000
-
     )

@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>ARAN AI — Create Account</title>
+
+    <!-- SAME CSS AS LOGIN PAGE -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <style>
+
+        /* =================================================
+           REGISTER PAGE
+           LOGIN PAGE SIZE MUST REMAIN EXACTLY THE SAME
+        ================================================= */
+
+        /*
+           DO NOT CHANGE:
+
+           .login-screen
+           .login-hero
+           .login-card
+
+           No transform
+           No scale
+           No width
+           No height
+        */
+
+
+        /* =================================================
+           ONLY REDUCE INTERNAL FORM SPACING
+           TO FIT THE EXTRA CONFIRM PASSWORD FIELD
+        ================================================= */
+
+        .register-card #registerForm {
+            margin-top: 6px;
+        }
+
+        .register-card #registerForm .field {
+            margin-bottom: 6px;
+        }
+
+        .register-card #registerForm .field label {
+            margin-bottom: 3px;
+        }
+
+        .register-card #registerForm .field input {
+            box-sizing: border-box;
+        }
+
+
+        /* =================================================
+           FIREBASE MESSAGE
+        ================================================= */
+
+        .register-card #firebaseAuthMessage {
+
+            display: none;
+
+            margin: 5px 0;
+
+            padding: 7px 9px;
+
+            border-radius: 7px;
+
+            font-size: 11px;
+
+            line-height: 1.3;
+
+            box-sizing: border-box;
+        }
+
+
+        /* =================================================
+           REGISTER LINK
+        ================================================= */
+
+        .register-login-link {
+
+            text-align: center;
+
+            margin-top: 8px;
+
+            font-size: 12px;
+        }
+
+        .register-login-link a {
+
+            color: #38bdf8;
+
+            text-decoration: none;
+
+            font-weight: 600;
+
+            margin-left: 5px;
+        }
+
+        .register-login-link a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* =================================================
+           SECURITY BOX
+        ================================================= */
+
+        .register-card .secure {
+            margin-top: 7px;
+        }
+
+
+        /* =================================================
+           SMALL HEIGHT SCREEN
+           CARD SIZE STILL NOT CHANGED
+        ================================================= */
+
+        @media (max-height: 750px) {
+
+            .register-card #registerForm .field {
+                margin-bottom: 4px;
+            }
+
+            .register-card #registerForm {
+                margin-top: 4px;
+            }
+
+            .register-card .register-login-link {
+                margin-top: 5px;
+            }
+
+            .register-card .secure {
+                margin-top: 4px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body class="login-page">
+
+
+<main class="login-screen">
+
+
+    <!-- =================================================
+         LEFT SIDE
+         EXACT SAME AS LOGIN PAGE
+    ================================================== -->
+
+    <section class="login-hero">
+
+
+        <div class="hero-brand">
+
+            <img
+                src="{{ url_for('static', filename='images/aran-logo.svg') }}"
+                alt="ARAN AI"
+            >
+
+        </div>
+
+
+        <div class="tag">
+
+            FROM INFORMATION → INTELLIGENCE → ACTION
+
+        </div>
+
+
+        <h1>
+
+            Safer Coasts.<br>
+
+            <span>
+                Stronger Communities.
+            </span>
+
+        </h1>
+
+
+        <p>
+
+            AI-powered early warnings, geospatial risk intelligence
+            and ready-to-act insights for coastal disaster resilience.
+
+        </p>
+
+
+        <div class="login-features">
+
+
+            <!-- LIVE MONITORING -->
+
+            <div class="login-feature">
+
+                <b>◉</b>
+
+                <div>
+
+                    <strong>
+                        Live Monitoring
+                    </strong>
+
+                    <span>
+                        Cyclone, rainfall &amp; storm-surge intelligence
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- SATELLITE INTELLIGENCE -->
+
+            <div class="login-feature">
+
+                <b>⌖</b>
+
+                <div>
+
+                    <strong>
+                        Satellite Intelligence
+                    </strong>
+
+                    <span>
+                        Google Earth Engine risk layers
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- GROUNDED AI -->
+
+            <div class="login-feature">
+
+                <b>!</b>
+
+                <div>
+
+                    <strong>
+                        Grounded AI
+                    </strong>
+
+                    <span>
+                        Source-based simple explanations
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- PEOPLE & ASSETS -->
+
+            <div class="login-feature">
+
+                <b>♧</b>
+
+                <div>
+
+                    <strong>
+                        People &amp; Assets
+                    </strong>
+
+                    <span>
+                        Infrastructure and shelter exposure
+                    </span>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =================================================
+         RIGHT SIDE
+         SAME SIZE AS LOGIN CARD
+    ================================================== -->
+
+    <section class="login-card register-card">
+
+
+        <!-- =================================================
+             LOGO
+        ================================================== -->
+
+        <div class="card-brand">
+
+            <img
+                src="{{ url_for('static', filename='images/aran-logo.svg') }}"
+                alt="ARAN AI"
+            >
+
+        </div>
+
+
+
+        <!-- =================================================
+             HEADING
+        ================================================== -->
+
+        <div class="login-heading">
+
+            <span class="eyebrow">
+
+                SECURE ACCESS
+
+            </span>
+
+
+            <h2>
+
+                Create your account
+
+            </h2>
+
+
+            <p>
+
+                Register to access live alerts, risk maps and
+                AI-powered disaster intelligence.
+
+            </p>
+
+        </div>
+
+
+
+        <!-- =================================================
+             REGISTER FORM
+        ================================================== -->
+
+        <form
+            id="registerForm"
+            onsubmit="event.preventDefault(); firebaseRegister();"
+        >
+
+
+            <!-- FULL NAME -->
+
+            <div class="field">
+
+                <label for="name">
+
+                    FULL NAME
+
+                </label>
+
+
+                <input
+                    id="name"
+                    type="text"
+                    placeholder="Enter your full name"
+                    autocomplete="name"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- EMAIL -->
+
+            <div class="field">
+
+                <label for="email">
+
+                    EMAIL ID
+
+                </label>
+
+
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- PASSWORD -->
+
+            <div class="field">
+
+                <label for="password">
+
+                    PASSWORD
+
+                </label>
+
+
+                <input
+                    id="password"
+                    type="password"
+                    placeholder="Create a password"
+                    autocomplete="new-password"
+                    minlength="6"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- CONFIRM PASSWORD -->
+
+            <div class="field">
+
+                <label for="confirmPassword">
+
+                    CONFIRM PASSWORD
+
+                </label>
+
+
+                <input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="Re-enter your password"
+                    autocomplete="new-password"
+                    minlength="6"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- FIREBASE MESSAGE -->
+
+            <div
+                id="firebaseAuthMessage"
+            ></div>
+
+
+
+            <!-- CREATE ACCOUNT -->
+
+            <button
+                class="btn primary"
+                type="submit"
+            >
+
+                Create Account
+
+                <span>
+                    →
+                </span>
+
+            </button>
+
+
+        </form>
+
+
+
+        <!-- =================================================
+             OR
+        ================================================== -->
+
+        <div class="or">
+
+            <span>
+                OR
+            </span>
+
+        </div>
+
+
+
+        <!-- =================================================
+             GOOGLE
+        ================================================== -->
+
+        <button
+            class="btn ghost"
+            type="button"
+            onclick="firebaseGoogleLogin()"
+        >
+
+            Continue with Google
+
+            <span>
+                →
+            </span>
+
+        </button>
+
+
+
+        <!-- =================================================
+             LOGIN
+        ================================================== -->
+
+        <div class="register-login-link">
+
+            <span style="opacity:.7;">
+
+                Already have an account?
+
+            </span>
+
+
+            <a href="/">
+
+                Login
+
+            </a>
+
+        </div>
+
+
+
+        <!-- =================================================
+             SECURITY
+        ================================================== -->
+
+        <div class="secure">
+
+            <b>
+
+                🛡 Secure registration
+
+            </b>
+
+
+            <span>
+
+                Firebase Authentication · Hackathon prototype
+
+            </span>
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+
+<!-- =====================================================
+     FIREBASE AUTHENTICATION
+====================================================== -->
+
+<script
+    type="module"
+    src="{{ url_for('static', filename='js/firebase-auth.js') }}"
+></script>
+
+
+</body>
+
+</html>
