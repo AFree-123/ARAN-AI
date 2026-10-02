@@ -4,329 +4,350 @@
 
 > **From Information → Intelligence → Action**
 
-ARAN AI is an AI-powered coastal disaster intelligence platform designed to support anticipatory disaster preparedness by combining geospatial intelligence, meteorological information, official disaster updates, infrastructure exposure analysis, and Gemini-powered reasoning.
+ARAN AI is an AI-powered coastal disaster intelligence platform designed to support anticipatory disaster preparedness by combining disaster information, meteorological data, geospatial intelligence, infrastructure awareness, and AI-powered assistance in a unified platform.
 
-The platform brings cyclone, rainfall, flood, storm-surge, coastal weather and infrastructure-risk information into a unified decision-support interface.
+### 🔗 Live Application
+
+**https://aran-ai.onrender.com**
 
 ---
 
-# 🚨 Problem
+## 🚨 Problem
 
-Coastal communities are exposed to multiple interconnected hazards:
+Coastal communities are exposed to multiple interconnected hazards such as:
 
 - 🌪️ Cyclones
 - 🌧️ Heavy rainfall
 - 🌊 Flooding
 - 🌊 Storm surge
-- 🌦️ Coastal weather events
 - 🏗️ Infrastructure disruption
+- 🌦️ Extreme coastal weather
 
-Disaster-related information is often distributed across different sources.
-
-This makes it difficult to quickly understand:
+Disaster information is often distributed across different sources, making it difficult to quickly understand:
 
 - What is happening?
 - Where is it happening?
 - How severe is the situation?
-- Which infrastructure may be exposed?
-- What information should stakeholders pay attention to?
+- Which areas or infrastructure may be exposed?
+- What information requires immediate attention?
 
-ARAN AI addresses this challenge by bringing relevant disaster intelligence into one platform.
+ARAN AI brings relevant disaster intelligence into a single decision-support platform.
 
 ---
 
-# 💡 Our Solution
+## 💡 Our Solution
 
-ARAN AI follows a simple intelligence workflow:
+ARAN AI follows a simple workflow:
 
-```text
-INFORMATION
-     ↓
-INTELLIGENCE
-     ↓
-ACTION
+**Information → Intelligence → Action**
 
-The platform retrieves relevant disaster information, processes it through disaster-intelligence services, applies geospatial analysis, and provides grounded explanations through an easy-to-understand interface.
+The platform combines disaster information, weather data, geospatial analysis, and grounded AI assistance to help users understand disaster situations more clearly.
 
-ARAN AI is designed as a:
-
-Decision-Support & Disaster Information-Intelligence Platform
+ARAN AI is designed as a **disaster information and decision-support platform**.
 
 It does not replace official emergency-warning systems or disaster-management authorities.
 
-🎯 Who Is ARAN AI For?
-🏛️ Authorities & Response Stakeholders
+---
 
-Designed to support:
+# 🖥️ Platform Features
 
-Disaster-management stakeholders
-Municipal authorities
-Emergency-response teams
-Infrastructure planners
-Local administrative stakeholders
-Key Capabilities
-Disaster information awareness
-Risk visualization
-Rainfall intelligence
-Cyclone context
-Infrastructure exposure awareness
-Grounded AI explanations
-Decision-support information
-👥 Communities & Public Users
+## 🔐 1. Secure Authentication
 
-Designed to support:
+ARAN AI provides Firebase-powered authentication for secure access to the platform.
 
-Coastal residents
-Communities
-Volunteers
-Community organizations
-Students
-Researchers
-Key Capabilities
-Simple disaster explanations
-Weather context
-Alert awareness
-Risk-map visualization
-Preparedness information
-AI-assisted disaster questions
-🌪️ Core Platform Features
-🔐 1. Secure Authentication
+Users can authenticate using:
 
-ARAN AI provides secure authentication using Firebase Authentication.
+- Email and password
+- Google Sign-In
+- Firebase Authentication
 
-Users can access the platform using:
+### Login Page
 
-Email and password
-Google Sign-In
-Firebase Authentication
-Login Page
+<p align="center">
+  <img src="docs/screenshots/aran-login.png" alt="ARAN AI Login Page" width="100%">
+</p>
 
-📝 2. User Registration
+---
 
-New users can create an ARAN AI account by providing:
+## 📝 2. User Registration
 
-Full name
-Email address
-Password
-Password confirmation
+New users can create an ARAN AI account using:
 
-The registration flow is integrated with Firebase Authentication.
+- Full Name
+- Email Address
+- Password
+- Confirm Password
 
-Register Page
+The registration process is connected to Firebase Authentication.
 
-Note: Add aran-register.png to docs/screenshots/ before pushing the README.
+### Register Page
 
-📊 3. Disaster Intelligence Dashboard
+<p align="center">
+  <img src="docs/screenshots/aran-register.png" alt="ARAN AI Register Page" width="100%">
+</p>
 
-The dashboard provides a centralized interface for accessing ARAN AI's major disaster-intelligence modules.
+---
 
-It brings together important information and provides navigation to:
+## 📊 3. Disaster Intelligence Dashboard
 
-Live Alerts
-Risk Map
-Infrastructure
-Shelters
-Weather
-AI Assistant
-Reports
-Parametric Risk Simulation
-Dashboard Preview
+The ARAN AI dashboard provides a centralized view of the platform's major disaster-intelligence modules.
 
-🚨 4. Live Disaster Alerts
+The dashboard provides access to:
 
-The Live Alerts module presents relevant disaster and weather information.
+- Live Alerts
+- Risk Map
+- Infrastructure
+- Shelters
+- Weather
+- AI Assistant
+- Reports
+- Parametric Risk Simulation
 
-Each alert can provide:
+### Dashboard Preview
 
-📍 Location
-🕐 Timestamp
-⚠️ Hazard type
-🔴 Severity
-📡 Source
-🤖 AI explanation
+<p align="center">
+  <img src="docs/screenshots/aran-dashboard.png" alt="ARAN AI Dashboard" width="100%">
+</p>
 
-The platform prioritizes authoritative meteorological and disaster-management information whenever available.
+---
 
-Live Alerts Preview
+## 🚨 4. Live Disaster Alerts
 
-🌀 5. Cyclone Intelligence
+The Live Alerts module provides disaster and weather information in a structured format.
 
-ARAN AI provides cyclone and weather-system context through its disaster intelligence layer.
+Alert information can include:
 
-Users can understand:
+- 📍 Location
+- 🕐 Timestamp
+- ⚠️ Hazard type
+- 🔴 Severity
+- 📡 Source
+- 🤖 AI-generated explanation
 
-Current cyclone/disturbance status
-System type
-Relevant location
-Severity context
-Source information
-Official information context
+The system is designed to prioritize authoritative disaster and meteorological information.
 
-Cyclone information is designed to remain source-aware and should be verified with official authorities for emergency decisions.
+### Live Alerts Preview
 
-🌧️ 6. Rainfall Intelligence
+<p align="center">
+  <img src="docs/screenshots/aran-live-alerts.png" alt="ARAN AI Live Alerts" width="100%">
+</p>
 
-ARAN AI integrates meteorological and geospatial rainfall information.
+---
 
-The rainfall intelligence layer supports:
+## 🌀 5. Cyclone Intelligence
 
-Rainfall visualization
-Geographic analysis
-Risk interpretation
-Disaster-preparedness awareness
+ARAN AI provides cyclone and weather-system information as part of its disaster intelligence layer.
+
+The platform can present:
+
+- Cyclone or disturbance information
+- System type
+- Relevant location
+- Severity context
+- Source information
+- Weather-system context
+
+Technical weather information is intended to be explained in a more understandable way for users.
+
+---
+
+## 🌧️ 6. Rainfall Intelligence
+
+Rainfall intelligence combines meteorological information with geospatial analysis.
+
+The system supports:
+
+- Rainfall visualization
+- Geographic analysis
+- Risk interpretation
+- Disaster preparedness awareness
 
 Google Earth Engine is used as part of the geospatial intelligence workflow.
 
-🗺️ 7. Geospatial Risk Map
+---
 
-The Risk Map provides a geographic visualization of rainfall and disaster-risk information.
+## 🗺️ 7. Geospatial Risk Map
+
+The Risk Map provides a geographic interface for viewing disaster-related geospatial information.
 
 It is designed to help users understand:
 
-Geographic conditions
-Rainfall-related risk
-Coastal areas of interest
-Relevant map layers
-Infrastructure exposure context
-Risk Map Preview
+- Geographic conditions
+- Rainfall-related risk
+- Coastal areas of interest
+- Map layers
+- Infrastructure exposure
 
-🏗️ 8. Infrastructure Exposure
+### Risk Map Preview
+
+<p align="center">
+  <img src="docs/screenshots/aran-risk-map.png" alt="ARAN AI Risk Map" width="100%">
+</p>
+
+---
+
+## 🏗️ 8. Infrastructure Exposure
 
 The Infrastructure module provides awareness of potentially exposed critical assets.
 
-The module covers categories such as:
+The module focuses on categories such as:
 
-🛣️ Roads
-⚡ Power infrastructure
-🏥 Medical facilities
-🚑 Emergency assets
-Infrastructure Preview
+- 🛣️ Roads
+- ⚡ Power infrastructure
+- 🏥 Medical facilities
+- 🚑 Emergency assets
 
-Prototype Note: Where verified official infrastructure datasets are not yet integrated, the current prototype uses reference/demo inventory.
+### Infrastructure Preview
 
-🏥 9. Shelter Awareness
+<p align="center">
+  <img src="docs/screenshots/aran-infrastructure.png" alt="ARAN AI Infrastructure Module" width="100%">
+</p>
 
-The Shelter module provides a disaster-preparedness interface for shelter awareness.
+> **Prototype Note:** Where verified official infrastructure datasets are not yet integrated, the current prototype may use reference or demonstration inventory.
 
-It is designed to help users understand available shelter-related information within the platform.
+---
 
-Prototype Note: Current shelter information should be treated as reference/demo information and not as an official emergency shelter registry.
+## 🏥 9. Shelter Awareness
 
-🌦️ 10. Weather Intelligence
+The Shelter module provides an interface for disaster-preparedness and shelter-related information.
 
-The Weather module provides meteorological information to support disaster awareness and preparedness.
+It is designed to help users understand shelter information within the platform.
 
-It can be used alongside:
+> **Prototype Note:** Current shelter information should be treated as reference/demo information and not as an official emergency shelter registry.
 
-Cyclone information
-Rainfall intelligence
-Live alerts
-Risk-map information
+---
 
-This allows users to interpret weather conditions in the broader disaster context.
+## 🌦️ 10. Weather Intelligence
 
-🤖 11. Gemini AI Assistant
+The Weather module provides meteorological information to support disaster awareness.
 
-ARAN AI includes a Gemini-powered disaster intelligence assistant.
+Weather information can be interpreted alongside:
 
-Users can ask questions related to:
+- Cyclone information
+- Rainfall intelligence
+- Live alerts
+- Risk-map information
 
-Cyclones
-Floods
-Heavy rainfall
-Storm surge
-Coastal weather
-Disaster preparedness
-Infrastructure exposure
-Emergency preparedness
-AI Assistant Preview
+This helps provide broader context around coastal weather conditions.
 
-Grounded Response Approach
+---
 
-The assistant is designed to avoid inventing:
+## 🤖 11. Gemini AI Disaster Assistant
 
-❌ Fake evacuation orders
-❌ Fake government instructions
-❌ Fake cyclone coordinates
-❌ Fake rainfall measurements
-❌ Fake road closures
-❌ Fake official warnings
+ARAN AI includes a Gemini-powered AI assistant for disaster-related questions.
 
-The goal is to preserve source meaning and provide understandable explanations.
+Users can ask about:
 
-Critical emergency information should always be verified with the appropriate authorities.
+- Cyclones
+- Heavy rainfall
+- Floods
+- Storm surge
+- Coastal weather
+- Disaster preparedness
+- Infrastructure exposure
+- Emergency preparedness
 
-💰 12. Parametric Risk Simulation
+### AI Assistant Preview
+
+<p align="center">
+  <img src="docs/screenshots/aran-ai-assistant.png" alt="ARAN AI Assistant" width="100%">
+</p>
+
+### Grounded AI Approach
+
+The assistant is designed to work with source-aware information and avoid inventing critical facts such as:
+
+- Fake evacuation orders
+- Fake government instructions
+- Fake cyclone coordinates
+- Fake rainfall measurements
+- Fake road closures
+- Fake official warnings
+
+The AI is intended to explain verified or provided information rather than replace official disaster authorities.
+
+Critical emergency information should always be verified with appropriate official sources.
+
+---
+
+## 💰 12. Parametric Risk Simulation
 
 ARAN AI includes a prototype parametric risk decision-support module.
 
-The workflow is:
+The basic workflow is:
 
-Rainfall Measurement
-        ↓
-Threshold Comparison
-        ↓
-Risk Status
-        ↓
-Decision-Support Visualization
-Parametric Risk Preview
+**Rainfall Measurement → Threshold Comparison → Risk Status → Decision Support**
 
-⚠️ This is a prototype decision-support simulation.
+### Parametric Risk Preview
 
-It is not an insurance contract and does not represent an actual insurance payout.
+<p align="center">
+  <img src="docs/screenshots/aran-insurance.png" alt="ARAN AI Parametric Risk Simulation" width="100%">
+</p>
 
-📄 13. Reports
+> **Prototype Note:** This is a decision-support simulation. It is not an insurance contract and does not represent an actual insurance payout.
 
-The Reports module is designed to organize disaster-related information and provide a structured view of relevant intelligence.
+---
 
-It can support future expansion toward:
+## 📄 13. Reports
 
-Situation reports
-Disaster summaries
-Risk reports
-Preparedness information
-Decision-support documentation
-🧠 ARAN AI Intelligence Workflow
+The Reports module is designed to organize disaster-related information into a structured interface.
 
-ARAN AI follows a source-aware disaster-intelligence pipeline:
+It can support:
 
-┌─────────────────────────────┐
-│     INFORMATION SOURCES     │
-│                             │
-│ IMD • Weather • Satellite   │
-└──────────────┬──────────────┘
-               ↓
-        ┌─────────────┐
-        │   RETRIEVE  │
-        └──────┬──────┘
-               ↓
-        ┌─────────────┐
-        │    VERIFY   │
-        └──────┬──────┘
-               ↓
-        ┌─────────────┐
-        │    GROUND   │
-        └──────┬──────┘
-               ↓
-        ┌─────────────┐
-        │   ANALYZE   │
-        └──────┬──────┘
-               ↓
-        ┌─────────────┐
-        │   EXPLAIN   │
-        └──────┬──────┘
-               ↓
-        ┌─────────────┐
-        │   LOCALIZE  │
-        └──────┬──────┘
-               ↓
-        ┌──────────────────┐
-        │ ALERT / DECISION │
-        │ SUPPORT          │
-        └──────────────────┘
+- Disaster summaries
+- Situation reports
+- Risk reports
+- Preparedness information
+- Decision-support documentation
 
-The purpose is to transform complex disaster information into understandable decision-support context while preserving source meaning.
+---
 
+# 🧠 ARAN AI Intelligence Workflow
+
+ARAN AI follows a source-aware disaster intelligence workflow:
+
+**Retrieve → Verify → Ground → Analyze → Explain → Localize → Support Action**
+
+The overall concept is:
+
+**Information → Intelligence → Action**
+
+The goal is to transform complex disaster information into understandable decision-support information while preserving the meaning of the original source.
+
+---
+
+# 🏗️ System Architecture
+
+```text
+             Disaster Information
+                      │
+                      ▼
+             Weather / Satellite
+                      │
+                      ▼
+            Google Earth Engine
+                      │
+                      ▼
+                Flask Backend
+                      │
+          ┌───────────┴───────────┐
+          ▼                       ▼
+      Gemini AI              Risk Analysis
+          │                       │
+          └───────────┬───────────┘
+                      ▼
+                  ARAN AI UI
+                      │
+        ┌─────────────┼─────────────┐
+        ▼             ▼             ▼
+      Alerts       Risk Map      Weather
+        │             │             │
+        └─────────────┼─────────────┘
+                      ▼
+          Infrastructure / Shelters
+                      │
+                      ▼
+              AI Assistant / Reports
 ☁️ Google Technology Integration
 🤖 Google Gemini
 
@@ -335,69 +356,39 @@ Gemini is used for:
 AI-powered reasoning
 Disaster explanations
 Natural-language interaction
-Multilingual assistance
-Disaster-preparedness guidance
+Disaster-preparedness assistance
+Multilingual interaction
 🛰️ Google Earth Engine
 
-Google Earth Engine is used for:
+Google Earth Engine supports:
 
 Satellite-derived geospatial intelligence
-Rainfall visualization
-Geographic analysis
-Earth-observation data workflows
+Rainfall analysis
+Geographic visualization
+Earth-observation workflows
 🔐 Firebase
 
-Firebase is used for:
+Firebase provides:
 
 Authentication
 Google Sign-In
+User account management
 Application data infrastructure
-Firestore integration
 ☁️ Google Cloud
 
-The architecture is designed to support scalable cloud deployment and future integration with additional Google Cloud services.
+The architecture is designed for cloud deployment and future integration with additional Google Cloud services.
 
-🏗️ System Architecture
-          Official Disaster Information
-                     │
-                     ▼
-          Meteorological Data
-                     │
-                     ▼
-          Google Earth Engine
-                     │
-                     ▼
-              Flask Backend
-                     │
-          ┌──────────┴──────────┐
-          ▼                     ▼
-      Gemini AI            Risk Analysis
-          │                     │
-          └──────────┬──────────┘
-                     ▼
-                ARAN AI UI
-                     │
-       ┌─────────────┼─────────────┐
-       ▼             ▼             ▼
-     Alerts       Risk Map      Weather
-       │             │             │
-       └─────────────┼─────────────┘
-                     ▼
-          Infrastructure / Shelters
-                     │
-                     ▼
-             AI Assistant / Reports
 🖥️ Platform Modules
 Module	Purpose
 📊 Dashboard	Central disaster intelligence overview
 🚨 Live Alerts	Disaster and weather alerts
-🗺️ Risk Map	Geospatial rainfall/risk visualization
+🗺️ Risk Map	Geospatial risk visualization
 🏗️ Infrastructure	Infrastructure exposure awareness
 🏥 Shelters	Shelter-awareness interface
 🌦️ Weather	Weather and rainfall information
-📰 News & Updates	Disaster-related information
+📰 News	Disaster-related information
 🤖 AI Assistant	Gemini-powered disaster assistance
-💰 Parametric Risk Simulation	Rainfall threshold decision-support prototype
+💰 Risk Simulation	Rainfall threshold decision support
 📄 Reports	Disaster information reporting
 ⚙️ Settings	Application settings
 🔐 Authentication	Firebase authentication
@@ -412,11 +403,11 @@ Preserve source meaning
 Identify information sources
 Display relevant timestamps
 Explain technical terminology
-Separate verified information from general AI explanations
+Separate source information from AI-generated explanations
 
-ARAN AI does not claim to replace official disaster-management systems.
+ARAN AI does not replace official disaster-management systems.
 
-Users should verify critical emergency decisions, evacuation orders and official warnings with the appropriate authorities.
+Critical emergency decisions, evacuation orders, and official warnings should always be verified with appropriate authorities.
 
 🛠️ Technology Stack
 Frontend
@@ -431,19 +422,20 @@ Flask
 REST APIs
 Artificial Intelligence
 Google Gemini
-Gemini reasoning architecture
+Gemini-powered reasoning
 Geospatial Intelligence
 Google Earth Engine
 Satellite-derived datasets
 Geospatial visualization
-Cloud & Data
+Authentication & Cloud
 Firebase Authentication
-Firebase Firestore
-Google Cloud ecosystem
-External Data Services
+Google Sign-In
+Google Cloud
+Render
+External Data
 Meteorological APIs
-Official disaster-information sources
-Map/tile services
+Disaster information sources
+Map and tile services
 📁 Project Structure
 ARAN-AI-final-fixed/
 │
@@ -464,12 +456,6 @@ ARAN-AI-final-fixed/
 │       └── aran-insurance.png
 │
 ├── services/
-│   ├── cyclone_service.py
-│   ├── disaster_ai.py
-│   ├── firebase_service.py
-│   ├── gee_service.py
-│   ├── imd_alert_service.py
-│   └── weather_service.py
 │
 ├── static/
 │   ├── css/
@@ -482,7 +468,7 @@ ARAN-AI-final-fixed/
 ├── .gitignore
 ├── README.md
 └── requirements.txt
-⚙️ Installation & Local Setup
+⚙️ Local Setup
 1. Clone the Repository
 git clone https://github.com/AFree-123/ARAN-AI.git
 cd ARAN-AI
@@ -496,14 +482,19 @@ pip install -r requirements.txt
 
 Create a .env file using .env.example as a reference.
 
-Do not commit private credentials, service-account files, or other secrets.
+Do not commit:
 
+Private API keys
+Service-account files
+Passwords
+Other credentials
 5. Run the Application
 python app.py
 
-The local application runs on:
+Open:
 
 http://127.0.0.1:5000
+
 🌐 Deployment
 
 ARAN AI is deployed as a Flask web application using Render.
@@ -512,7 +503,7 @@ Live Application
 
 https://aran-ai.onrender.com
 
-The deployment connects the application repository with the cloud-hosted Flask service.
+The application is connected to the GitHub repository and deployed through Render.
 
 🌏 Coastal India Focus
 
@@ -532,62 +523,44 @@ Gujarat
 With appropriate datasets and authorized integrations, the architecture can be extended to broader Asia-Pacific coastal regions.
 
 🚀 Future Scope
-1. Advanced Hazard Modelling
-
-Future versions can integrate:
-
+Advanced Hazard Modelling
 Storm-surge modelling
 Flood propagation modelling
 Multi-hazard forecasting
 Higher-resolution rainfall analysis
-2. Infrastructure Intelligence
-
-Future versions can integrate verified datasets for:
-
-Power grids
-Roads
-Hospitals
-Emergency facilities
-Critical public infrastructure
-3. Official Emergency Workflows
-
-Future versions can support secure integrations with authorized disaster-management workflows.
-
-4. AI & Automation
-
-Future improvements include:
-
+Infrastructure Intelligence
+Verified power-grid datasets
+Road-network data
+Hospital and medical facility datasets
+Critical infrastructure datasets
+Emergency Workflows
+Authorized disaster-management integrations
+Automated alert workflows
+Notification systems
+Emergency-response coordination
+AI & Automation
 Continuous disaster monitoring
 Automated event detection
 Situation reports
-Intelligent alert prioritization
-Automated notification workflows
-5. Community Accessibility
-
-Future versions can support:
-
+Alert prioritization
+Automated summaries
+Community Accessibility
 More Indian languages
-Mobile-first access
-Low-bandwidth environments
-Voice-first disaster information
-6. National Scale
-
-The architecture can be extended to support disaster intelligence across vulnerable coastal regions of India.
-
-🎯 Project Impact
+Mobile-first experience
+Low-bandwidth support
+Voice-based disaster information
+🎯 Expected Impact
 
 ARAN AI aims to support a shift from:
 
-Reactive Disaster Response
-          ↓
-Anticipatory Disaster Intelligence
+Reactive Disaster Response → Anticipatory Disaster Intelligence
 
-The platform focuses on helping stakeholders:
+The platform focuses on helping users:
 
-Understand risk earlier
+Understand disaster information earlier
 Connect information faster
 Visualize geographic exposure
-Interpret complex disaster information
+Interpret complex information
 Support preparedness decisions
 🧪 Current Prototype Status
 
@@ -595,6 +568,7 @@ ARAN AI currently demonstrates:
 
 ✅ Firebase Authentication
 ✅ Google Sign-In
+✅ User Registration
 ✅ Gemini AI Assistant
 ✅ Google Earth Engine integration
 ✅ Rainfall visualization
@@ -608,15 +582,15 @@ ARAN AI currently demonstrates:
 ✅ Multilingual interaction
 ✅ Cloud deployment
 
-Some infrastructure and shelter information is prototype/reference data and should be replaced with verified official datasets for production deployment.
+Some infrastructure and shelter information may currently use prototype/reference data and should be replaced with verified official datasets for production deployment.
 
 🏆 Hackathon Context
 
-ARAN AI was developed for a Google Cloud / AI-focused hackathon challenge around:
+ARAN AI was developed for an AI and Google Cloud-focused disaster resilience challenge centered on:
 
 Cyclone Impact & Infrastructure Vulnerability Forecasting
 
-The challenge focuses on applying:
+The project applies:
 
 Artificial Intelligence
 Satellite data
@@ -626,31 +600,28 @@ Geospatial intelligence
 to support:
 
 Cyclone preparedness
-Storm-surge analysis
-Rainfall risk
-Infrastructure vulnerability
+Rainfall-risk awareness
+Storm-surge understanding
+Infrastructure vulnerability awareness
 Early-warning decision support
-
-ARAN AI addresses these goals through an integrated disaster-intelligence workflow.
-
 🔮 Vision
 
-The long-term vision of ARAN AI is to create a scalable coastal disaster intelligence layer connecting:
+The long-term vision of ARAN AI is to build a scalable coastal disaster intelligence layer connecting:
 
-Earth Observation
-       +
+**Earth Observation
+
 Weather Intelligence
-       +
 Official Disaster Information
-       +
 Artificial Intelligence
-       +
-Geospatial Risk Analysis
-       ↓
+Geospatial Risk Analysis**
+
+↓
+
 Better Disaster Preparedness
+
 👩‍💻 Author
 
-Ms. Afreena Abdul Jabbar
+Ms. A. Afreena
 
 B.Tech Information Technology
 Sir Isaac Newton College of Engineering and Technology
@@ -664,7 +635,7 @@ It is intended for:
 
 Information
 Visualization
-Decision-support
+Decision support
 
 It does not replace:
 
